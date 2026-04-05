@@ -1,0 +1,12 @@
+{
+    "name": "raicesvivas/web",
+    "description": "Raíces Vivas - Festival de Renacimiento Rural",
+    "autoload": {
+        "psr-4": {
+            "RaicesVivas\\": "src/"
+        }
+    },
+    "require": {
+        "monolog/monolog": "^3.0"
+    }
+}

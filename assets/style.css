@@ -1,0 +1,833 @@
+/*1. VARIABLES Y ESTILOS GLOBALES */
+:root {
+    --verde-rv: #237c4a;
+    --naranja-rv: #E38D2D;
+    --crema-rv: #FDFBF7;
+    --cielo-rv: #87CEEB;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: var(--crema-rv);
+    color: #333;
+}
+
+h1, h2, h3 {
+    font-family: 'Montserrat', sans-serif;
+}
+
+section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+
+.bg-verde-rv { background-color: var(--verde-rv); }
+.text-verde-rv { color: var(--verde-rv); }
+
+/* 2. NAVBAR Y NAVEGACIÓN */
+.navbar {
+    z-index: 1050;
+    transition: all 0.4s ease;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.rv-logo {
+    width: 140px;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.rv-logo:hover { transform: scale(1.5); }
+
+.rv-brand-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.35rem; 
+    line-height: 1;
+    letter-spacing: 1px;
+}
+
+/* --- ESTILO DE LOS LINKS --- */
+.navbar .nav-link {
+    color: var(--verde-rv) !important;
+    font-weight: 600;
+    position: relative;
+    padding: 0.5rem 0;
+    transition: color 0.3s ease;
+}
+
+/* --- LA FLECHA NARANJA---*/
+.navbar .dropdown-toggle {
+    padding-right: 20px !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23E38D2D'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right center !important;
+    background-size: 18px !important;
+}
+
+/* Quitar el triangulito por defecto de Bootstrap */
+.navbar .dropdown-toggle::after {
+    display: none !important;
+}
+
+/* --- LA LÍNEA NARANJA ANIMADA --- */
+.navbar .nav-link::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--naranja-rv);
+    transition: width 0.3s ease;
+}
+
+.navbar .nav-link:hover::before {
+    width: 100%;
+}
+
+.navbar .nav-link:hover {
+    color: var(--naranja-rv) !important;
+}
+
+/* --- DROPDOWN MENU --- */
+.navbar .dropdown-menu {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-top: 15px;
+}
+
+.navbar .dropdown-menu .dropdown-item:hover {
+    background-color: var(--crema-rv);
+    color: var(--naranja-rv) !important;
+    padding-left: 1.5rem;
+}
+
+header .navbar-nav .nav-link,
+header .navbar-nav .nav-link:hover {
+    color: var(--verde-rv) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+header .navbar-brand span {
+    color: var(--verde-rv) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+header .navbar-collapse,
+header .navbar-nav,
+header .nav-item {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+header .d-flex a {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+@media (min-width: 992px) {
+    .rv-brand-text { font-size: 1.55rem; }
+}
+
+/* 3. COMPONENTES REUTILIZABLES (Botones, Títulos)*/
+.btn-naranja {
+    background-color: var(--naranja-rv);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-naranja:hover {
+    background-color: #c47621;
+    transform: translateY(-2px);
+    color: white;
+}
+
+.section-heading {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.section-title {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--verde-rv);
+    font-size: 2.3rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.section-line {
+    width: 90px;
+    height: 4px;
+    background: var(--naranja-rv);
+    margin: 0.9rem auto 0;
+    border-radius: 999px;
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.hero-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7);
+    z-index: 0;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.55));
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* Efecto para el botón "Cómo llegar" */
+.btn-outline-dark {
+    border-color: var(--verde-rv);
+    color: var(--verde-rv);
+    transition: all 0.3s ease;
+}
+
+.btn-outline-dark:hover {
+    background-color: var(--verde-rv);
+    border-color: var(--verde-rv);
+    color: white;
+    transform: translateY(-8px);
+}
+
+/* Estilo del Spinner y disponibilidad */
+.border.rounded-xl {
+    background-color: rgba(45, 90, 39, 0.05);
+    border: 1px dashed var(--verde-rv) !important;
+}
+
+/* Cifras / Estadísticas */
+.cifras-section {
+    background-color: #f8f9fa;
+}
+
+.cifra-circle {
+    width: 220px;
+    height: 220px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease;
+}
+
+.cifra-circle:hover {
+    transform: translateY(-8px);
+}
+
+.cifra-circle h3 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--verde-rv);
+    margin: 0;
+}
+
+.cifra-circle p {
+    margin-top: 0.5rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.accordion-collapse {
+    transition: height 0.35s ease !important;
+}
+
+.accordion-body {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+}
+
+/* -- 4. SECCIÓN FESTIVAL --*/
+
+.img-border-decor {
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    width: 100%;
+    height: 100%;
+    border: 3px solid var(--verde-rv);
+    border-radius: 1.5rem;
+    z-index: -1;
+}
+
+.badge-pueblo {
+    position: absolute;
+    bottom: -15px;
+    right: -10px;
+    background: var(--naranja-rv);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 8px 20px rgba(227, 141, 45, 0.4);
+    z-index: 10;
+}
+
+.img-parallax {
+    transition: transform 0.8s ease;
+}
+
+.img-wrapper:hover .img-parallax {
+    transform: scale(1.08);
+}
+
+/* --- ESTILOS PUEBLOS VECINOS --- */
+.pueblo-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: all 0.4s ease;
+    height: 100%;
+}
+
+.pueblo-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(45, 90, 39, 0.15);
+}
+
+.pueblo-img-container {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.pueblo-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.pueblo-card:hover .pueblo-img-container img {
+    transform: scale(1.1);
+}
+
+.pueblo-overlay {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: var(--naranja-rv);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.pueblo-info {
+    padding: 1.5rem;
+}
+
+.pueblo-info h4 {
+    color: var(--verde-rv);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.pueblo-info p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0;
+}
+/* --- Ajustes para Carruceles en Cards --- */
+.pueblo-img-container .carousel,
+.pueblo-img-container .carousel-inner,
+.pueblo-img-container .carousel-item {
+    height: 100%;
+}
+
+.pueblo-img-container img {
+    height: 250px;
+    object-fit: cover;
+}
+
+.carousel-fade .carousel-item {
+    transition-duration: 0.8s;
+}
+
+/* Cards de Objetivos */
+.card-premium {
+    background: white;
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    height: 100%;
+    border: 1px solid rgba(0,0,0,0.03);
+}
+
+.card-premium:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 40px rgba(45, 90, 39, 0.12);
+}
+
+.icon-circle {
+    width: 80px;
+    height: 80px;
+    background: var(--crema-rv);
+    color: var(--verde-rv);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    font-size: 2.2rem;
+    transition: all 0.4s ease;
+}
+
+.card-premium:hover .icon-circle {
+    background: var(--naranja-rv);
+    color: white;
+    transform: rotateY(360deg);
+}
+
+.card-premium h4 {
+    font-weight: 700;
+    color: var(--verde-rv);
+    margin-bottom: 1rem;
+}
+
+/* Estilos del Carrusel */
+#carouselEdiciones img {
+    height: 550px;
+    object-fit: cover;
+    filter: brightness(0.8);
+}
+
+.carousel-caption {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(1.5px);
+    border-radius: 15px;
+    padding: 1.5rem;
+    bottom: 3rem;
+}
+
+.thumb-nav {
+    width: 90px;
+    height: 65px;
+    object-fit: cover;
+    cursor: pointer;
+    opacity: 0.5;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.thumb-nav:hover, .thumb-nav.active {
+    opacity: 1;
+    border-color: var(--naranja-rv);
+    transform: scale(1.1);
+}
+
+/* -- 5. SECCIÓN EXPERIENCIAS--*/
+
+/* 1. FILTROS */
+.btn-filter {
+    background-color: #f7f3e9;
+    color: var(--verde-rv);
+    font-weight: 700;
+    border: 1px solid transparent;
+    transition: all 0.3s ease-in-out;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1.5px;
+    border-radius: 50px;
+    padding: 10px 25px;
+}
+
+.btn-filter:hover, 
+.btn-filter.active {
+    transform: translateY(-2px);
+    background-color: #e5dfd3;
+    color: var(--verde-rv);
+}
+
+.btn-filter.active {
+    background-color: var(--verde-rv) !important;
+    color: white !important;
+    box-shadow: 4px 4px 0px rgba(48, 164, 73, 0.2);
+}
+
+/* 2. CARDS */
+.card-experiencia {
+    background-color: white;
+    border: none;
+    border-radius: 0; 
+    padding: 15px;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 10px 10px 0px rgba(0,0,0,0.03);
+    height: 100%;
+}
+
+.card-experiencia:hover {
+    transform: rotate(1.5deg) translateY(-8px);
+    box-shadow: 20px 20px 30px rgba(0,0,0,0.06);
+}
+
+.card-experiencia .position-relative {
+    overflow: hidden;
+    height: 220px;
+    border: 1px solid #dcd3c1;
+}
+
+.card-experiencia .card-img-top {
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+    filter: sepia(15%);
+}
+
+.card-experiencia:hover .card-img-top {
+    transform: scale(1.1);
+}
+
+/* 3. BADGES */
+.card-experiencia .badge {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    border-radius: 50% !important;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    transform: rotate(-10deg);
+    border: 2px dashed rgba(255,255,255,0.6);
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+    white-space: normal; /* Para que el texto largo salte de línea en el círculo */
+}
+
+/* 4. BOTONES */
+.btn-outline-verde-rv {
+    border: 2px solid var(--verde-rv);
+    color: var(--verde-rv);
+    font-weight: 800;
+    border-radius: 0; 
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-verde-rv:hover {
+    background-color: var(--verde-rv);
+    color: white !important;
+    transform: translateY(-2px);
+}
+
+.btn-naranja-rv {
+    background-color: var(--naranja-rv);
+    color: white;
+    border-radius: 0;
+    font-weight: 800;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 0.8rem;
+    box-shadow: 4px 4px 0px #c47621;
+    transition: all 0.3s ease;
+}
+
+.btn-naranja-rv:hover {
+    filter: brightness(1.1);
+    background-color: #d35400;
+    transform: scale(1.03);
+    box-shadow: 0 10px 25px rgba(230, 126, 34, 0.5);
+}
+
+.btn-verde-rv {
+    background-color: var(--verde-rv);
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    box-shadow: 6px 6px 0px #1a5928;
+    transition: all 0.3s ease;
+}
+
+.btn-verde-rv:hover {
+    background-color: #1a5928;
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 8px 10px 0px #0f3317;
+}
+
+/* -- 6. SECCIÓN INSCRIPCION--*/
+.seccion-inscripcion {
+    background-color: #f1f0ea;
+}
+
+.registro-limpio {
+    border-radius: 15px !important;
+}
+
+.bg-kraft {
+    background-color: #fdfaf5;
+}
+
+/* --- ESTILO DE INPUTS CON ICONO --- */
+.icon-input {
+    background-color: #ffffff !important;
+    border: 1px solid #dcd3c1 !important;
+    border-right: none !important;
+    border-radius: 8px 0 0 8px !important;
+    color: #888;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+}
+
+.custom-input {
+    background-color: #ffffff !important;
+    border: 1px solid #dcd3c1 !important;
+    border-radius: 0 8px 8px 0 !important;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+}
+
+/* Hover/Focus junto: El bloque entero se ilumina */
+.input-group:focus-within .icon-input {
+    border-color: var(--verde-rv) !important;
+    color: var(--verde-rv);
+}
+.input-group:focus-within .custom-input {
+    border-color: var(--verde-rv) !important;
+    box-shadow: 4px 4px 12px rgba(48, 164, 73, 0.08) !important;
+    transform: translateY(-2px);
+}
+
+/* --- LATERAL CURIOSIDADES --- */
+.lateral-curiosidades {
+    background: linear-gradient(135deg, var(--verde-rv), #1a5928);
+}
+
+.bg-naranja-rv {
+    background-color: #e67e22 !important;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.curiosidad {
+    border-left: 2px dashed rgba(255, 255, 255, 0.342);
+    padding-left: 20px;
+}
+
+.fade-element {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.is-hidden {
+    opacity: 0 !important;
+    transform: translateY(-30px);
+    pointer-events: none;
+}
+
+#mensaje-exito i {
+    display: block;
+    animation: bounceSuccess 2s infinite;
+}
+
+/* --- FOOTER --- */
+.footer-tablon {
+    background-color: #f7f5f0; 
+    position: relative;
+    overflow: hidden;
+    padding-top: 80px !important;
+}
+
+.footer-tablon::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;   
+    background: linear-gradient(to right, 
+                #319c48 0%,
+                #894a12 50%,
+                #f7f5f0 100%);
+}
+
+.nota-papel {
+    background: #ffffff;
+    padding: 25px;
+    height: 100%;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.05);
+    position: relative;
+    border-radius: 2px;
+    transition: transform 0.3s ease;
+}
+
+.nota-marca { transform: rotate(-1deg); }
+.nota-1     { transform: rotate(1.5deg); }
+.nota-social { transform: rotate(-1.2deg); }
+.nota-legal  { transform: rotate(-2deg); background-color: #fffde7 !important; } 
+.nota-contacto { transform: rotate(1deg); }
+
+.nota-papel:hover {
+    transform: translateY(-5px) rotate(0deg) !important;
+}
+
+.chincheta {
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    position: absolute;
+    top: 10px; left: 50%;
+    transform: translateX(-50%);
+    background: #666;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.chincheta.verde { background-color: #28a745; }
+.chincheta.naranja { background-color: #e67e22; }
+.chincheta.azul { background-color: #007bff; }
+.chincheta.roja { background-color: #dc3545; }
+
+.nota-categoria {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #e67e22;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.nav-vertical a {
+    display: table;
+    color: #444;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+    border-bottom: 2px solid transparent;
+    line-height: 1.2;
+}
+
+.nav-vertical a:hover {
+    color: #30a449;
+    border-bottom: 2px solid #30a449;
+    padding-bottom: 2px;
+}
+
+.contacto-info-mejorado a {
+    display: table;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.contacto-info-mejorado a:hover {
+    color: #e67e22 !important;
+    border-bottom: 2px solid #e67e22;
+}
+
+.footer-logo {
+    max-height: 90px;
+    width: auto;
+    margin-bottom: 15px;
+}
+
+.manifiesto {
+    font-size: 0.85rem;
+}
+
+@media (max-width: 991px) {
+    .nota-papel {
+        transform: rotate(0deg) !important;
+        margin-bottom: 15px;
+    }
+}
+
+/* == PROTECCIÓN MÁRGENES BOOTSTRAP VS TAILWIND == */
+
+.container {
+    width: 100% !important;
+    padding-right: 12px !important;
+    padding-left: 12px !important;
+    margin-right: auto !important;
+    margin-left: auto !important;
+}
+
+@media (min-width: 576px)  { .container { max-width: 540px !important; } }
+@media (min-width: 768px)  { .container { max-width: 720px !important; } }
+@media (min-width: 992px)  { .container { max-width: 960px !important; } }
+@media (min-width: 1200px) { .container { max-width: 1140px !important; } }
+@media (min-width: 1400px) { .container { max-width: 1320px !important; } }
+
+/* 7. VALIDACIÓN VISUAL DEL FORMULARIO */
+
+/* Borde rojo en el campo con error */
+.is-invalid-rv {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15) !important;
+}
+
+/* Mensaje de error debajo del campo */
+.error-rv {
+    color: #dc3545;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 5px;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: fadeInDown 0.25s ease;
+}
+
+.error-rv i {
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+/* Animación de entrada del mensaje */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
