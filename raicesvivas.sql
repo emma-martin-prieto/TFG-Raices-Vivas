@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-04-2026 a las 22:47:14
+-- Tiempo de generación: 06-04-2026 a las 10:54:35
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -247,7 +247,9 @@ CREATE TABLE `persona` (
 --
 
 INSERT INTO `persona` (`id`, `codigo`, `nombre`, `priApe`, `segApe`, `fecha_nacimiento`, `email`, `rol`, `fecha_registro`, `id_localidad`) VALUES
-(2, 'RV-4305', 'Emma', 'Martín', 'Prieto', '2003-02-16', 'emma.marpri@gmail.com', 'USER', '2026-04-05 22:08:50', 16);
+(4, 'RV-9430', 'Hugo', 'Salguero', NULL, '2008-11-03', 'hugo@gmail.com', 'USER', '2026-04-06 10:19:39', 10),
+(5, 'RV-6520', 'Emma', 'Martín', 'Prieto', '2006-03-16', 'emma.marpri@gmail.com', 'USER', '2026-04-06 10:24:37', 6),
+(6, 'RV-0358', 'Ana', 'Gomez', NULL, '1956-02-15', 'ana@gmail.com', 'USER', '2026-04-06 10:34:02', 20);
 
 -- --------------------------------------------------------
 
@@ -259,6 +261,19 @@ CREATE TABLE `persona_sesion` (
   `id_persona` int(10) UNSIGNED NOT NULL,
   `id_sesion` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `persona_sesion`
+--
+
+INSERT INTO `persona_sesion` (`id_persona`, `id_sesion`) VALUES
+(4, 1),
+(5, 3),
+(5, 8),
+(5, 13),
+(5, 17),
+(6, 7),
+(6, 13);
 
 -- --------------------------------------------------------
 
@@ -465,7 +480,7 @@ ALTER TABLE `organizador`
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `sesion`
