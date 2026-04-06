@@ -5,11 +5,7 @@ use RaicesVivas\Models\ActividadModel;
 
 class CarritoController {
 
-    /**
-     * Añade una actividad al carrito (guardado en sesión).
-     * Llamado via GET: index.php?controller=Carrito&action=añadir&id=X
-     * Devuelve JSON para que el JS muestre el toast.
-     */
+    /*Añade una actividad al carrito (guardado en sesión). Devuelve JSON para que el JS muestre el toast.*/
     public function aniadir(): void {
         $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -40,10 +36,7 @@ class CarritoController {
         exit();
     }
 
-    /**
-     * Elimina una actividad del carrito.
-     * Llamado via GET: index.php?controller=Carrito&action=eliminar&id=X
-     */
+    /*Elimina una actividad del carrito*/
     public function eliminar(): void {
         $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -57,9 +50,7 @@ class CarritoController {
         exit();
     }
 
-    /**
-     * Vacía el carrito entero.
-     */
+    /*Vacía el carrito entero.*/
     public function vaciar(): void {
         unset($_SESSION['carrito']);
         header('Location: index.php?controller=Actividad&action=showExperiencias');

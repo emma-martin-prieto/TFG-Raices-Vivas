@@ -1,5 +1,5 @@
 <?php
-// ── Helpers
+// Helpers
 
 function badgeTipo(string $tipo): string {
     return match($tipo) {
@@ -245,7 +245,7 @@ function labelFiltro(string $tipo): string {
                 </div>
             <?php endif; ?>
 
-        </div><!-- /row -->
+        </div>
 
         <!-- Botón inscripción -->
         <div class="text-center mt-5 pt-4">
@@ -275,35 +275,5 @@ function labelFiltro(string $tipo): string {
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    const toastEl  = document.getElementById('toastCarrito');
-    const toastMsg = document.getElementById('toastMensaje');
-    const toast    = new bootstrap.Toast(toastEl, { delay: 3000 });
-
-    document.querySelectorAll('.btn-reservar').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const id   = this.dataset.id;
-            const base = this.dataset.base;
-
-            fetch(base + 'index.php?controller=Carrito&action=aniadir&id=' + id)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.ok) {
-                        toastEl.classList.remove('bg-danger', 'bg-success');
-                        toastEl.classList.add('bg-success');
-                    } else {
-                        toastEl.classList.remove('bg-danger', 'bg-success');
-                        toastEl.classList.add('bg-danger');
-                    }
-                    toastMsg.textContent = data.mensaje;
-                    toast.show();
-                });
-        });
-    });
-
-});
-</script>
 </body>
 </html>

@@ -44,7 +44,7 @@ class InscripcionController {
         $notas       = trim($_POST['notas']        ?? '');
         $carrito     = $_SESSION['carrito']        ?? [];
 
-        // ── Validaciones
+        // Validaciones
         $errores = [];
 
         if (strlen($nombre) < 2)
@@ -87,13 +87,13 @@ class InscripcionController {
             return;
         }
 
-        // ── Generar código único RV-XXXX
+        // Generar código único RV-XXXX
         $personaModel = new PersonaModel();
         do {
             $codigo = 'RV-' . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
         } while ($personaModel->existeCodigo($codigo));
 
-        // ── Crear entidad y guardar en BD
+        // Crear entidad y guardar en BD
         $persona = (new PersonaEntity())
             ->setCodigo($codigo)
             ->setNombre($nombre)
@@ -115,10 +115,10 @@ class InscripcionController {
             return;
         }
 
-        // ── Obtener el id de la persona recién creada
+        // Obtener el id de la persona recién creada
         $idPersona = $personaModel->getIdByCodigo($codigo);
 
-        // ── Inscribir la persona en la primera sesión de cada actividad del carrito
+        // Inscribir la persona en la primera sesión de cada actividad del carrito
         if ($idPersona) {
             $actividadModel = new ActividadModel();
             foreach ($carrito as $idActividad) {
@@ -126,12 +126,10 @@ class InscripcionController {
                 if ($idSesion) {
                     $personaModel->inscribirEnSesion($idPersona, $idSesion);
                 }
-                // Debug temporal — eliminar después de comprobar
-                error_log("RV DEBUG: idPersona=$idPersona, idActividad=$idActividad, idSesion=" . ($idSesion ?? 'NULL'));
             }
         }
 
-        // ── Éxito: guardar en sesión y redirigir
+        // Éxito: guardar en sesión y redirigir
         $_SESSION['inscripcion_ok']     = true;
         $_SESSION['inscripcion_nombre'] = $nombre;
         $_SESSION['inscripcion_codigo'] = $codigo;
@@ -158,10 +156,7 @@ class InscripcionController {
         ]);
     }
 
-    /**
-     * Endpoint AJAX: busca una persona por su código RV y devuelve JSON
-     * con sus datos y las actividades de su carrito (persona_sesion).
-     */
+    /*busca una persona por su código RV y devuelve JSON con sus datos y las actividades de su carrito (persona_sesion).*/
     public function buscarCodigo(): void {
         header('Content-Type: application/json; charset=utf-8');
 

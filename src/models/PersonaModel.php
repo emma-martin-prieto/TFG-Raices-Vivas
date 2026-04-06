@@ -58,9 +58,7 @@ class PersonaModel extends Model {
         }
     }
 
-    /**
-     * Inserta una fila en persona_sesion (persona ↔ sesión).
-     */
+    /*Inserta una fila en persona_sesion*/
     public function inscribirEnSesion(int $idPersona, int $idSesion): bool {
         try {
             $sql  = "INSERT IGNORE INTO persona_sesion (id_persona, id_sesion) VALUES (:idPersona, :idSesion)";
@@ -106,11 +104,7 @@ class PersonaModel extends Model {
         }
     }
 
-    /**
-     * Busca una persona por su código RV y devuelve sus datos
-     * junto con las actividades que tiene reservadas (via persona_sesion).
-     * Devuelve un array listo para json_encode, o null si no existe.
-     */
+    /*Busca una persona por su código RV y devuelve sus datos junto con las actividades que tiene reservadas (via persona_sesion)*/
     public function getByCodigoConActividades(string $codigo): array|null {
         try {
             // 1. Buscar la persona

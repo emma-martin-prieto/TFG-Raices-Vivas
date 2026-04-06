@@ -5,10 +5,7 @@ use RaicesVivas\Models\ActividadModel;
 
 class ActividadController {
 
-    /**
-     * Muestra la página de experiencias con todas las actividades de la BD.
-     * Equivale a la antigua experiencias.html
-     */
+    /*Muestra la página de experiencias con todas las actividades de la BD.*/
     public function showExperiencias(): void {
         $model       = new ActividadModel();
         $actividades = $model->getAllConTipo();
@@ -18,10 +15,7 @@ class ActividadController {
         ]);
     }
 
-    /**
-     * Devuelve el detalle de una actividad (para el modal).
-     * Acceso: index.php?controller=Actividad&action=getDetalle&id=X
-     */
+    /*Devuelve el detalle de una actividad (para el modal).*/
     public function getDetalle(): void {
         $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 

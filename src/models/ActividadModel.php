@@ -8,11 +8,7 @@ class ActividadModel extends Model {
         $this->tabla = "actividad";
     }
 
-    /**
-     * Todas las actividades activas con su tipo y organizador.
-     * Incluye datos de sesión (hora inicio, hora fin, cupo_max).
-     * Usado en: views/actividades/showAll.php
-     */
+    /*Todas las actividades activas con su tipo y organizador.*/
     public function getAllConTipo(): array|null {
         try {
             $consulta = "SELECT a.id, a.tipo, a.nombre, a.descripcion_general,
@@ -51,10 +47,7 @@ class ActividadModel extends Model {
         }
     }
 
-    /**
-     * Una actividad completa con todos sus datos de subtipo.
-     * Usado en: modal de detalle
-     */
+    /*Una actividad completa con todos sus datos de subtipo. Usado en: modal de detalle*/
     public function getDetalleById(int $id): mixed {
         try {
             $consulta = "SELECT a.id, a.tipo, a.nombre, a.descripcion_general,
@@ -85,10 +78,7 @@ class ActividadModel extends Model {
         }
     }
 
-    /**
-     * Actividades filtradas por tipo (taller | ruta | charla | alojamiento).
-     * JOIN directo a la tabla subtipo, sin CASE.
-     */
+    /*Actividades filtradas por tipo (taller | ruta | charla | alojamiento).*/
     public function getByTipo(string $tipo): array|null {
         try {
             $tablasValidas = ['taller', 'ruta', 'charla', 'alojamiento'];
@@ -114,10 +104,7 @@ class ActividadModel extends Model {
         }
     }
 
-    /**
-     * Sesiones de una actividad en la edición 2026 con plazas libres calculadas.
-     * Usado en: modal de detalle y formulario de inscripción.
-     */
+    /*Sesiones de una actividad en la edición 2026 con plazas libres calculadas. Usado en: modal de detalle y formulario de inscripción.*/
     public function getSesionesByActividad(int $idActividad): array|null {
         try {
             $consulta = "SELECT s.id, s.cupo_max, s.fecha_hora_inicio, s.fecha_hora_fin,
@@ -142,9 +129,7 @@ class ActividadModel extends Model {
         }
     }
 
-    /**
-     * Cuenta las actividades activas de un tipo concreto.
-     */
+    /*Cuenta las actividades activas de un tipo concreto.*/
     public function countByTipo(string $tipo): int {
         try {
             $tablasValidas = ['taller', 'ruta', 'charla', 'alojamiento'];
@@ -166,22 +151,15 @@ class ActividadModel extends Model {
         }
     }
 
-    /**
-     * Devuelve el id de la primera sesión disponible (con plazas libres)
-     * de una actividad en la edición 2026.
-     * Si no hay sesiones con plazas, devuelve la primera sesión igualmente.
-     */
+    /* Devuelve el id de la primera sesión disponible (con plazas libres) de una actividad en la edición 2026.
+     Si no hay sesiones con plazas, devuelve la primera sesión igualmente.*/
     public function getPrimeraSesionId(int $idActividad): int|null {
         try {
-            $sql = "SELECT s.id,
-                           (s.cupo_max - COUNT(ps.id_persona)) AS plazas_libres
-                    FROM sesion s
-                    JOIN edicion e ON s.id_edicion = e.id
-                    LEFT JOIN persona_sesion ps ON s.id = ps.id_sesion
-                    WHERE s.id_actividad = :idActividad
-                      AND e.anio = 2026
-                    GROUP BY s.id
-                    ORDER BY plazas_libres DESC, s.fecha_hora_inicio ASC
+            $sql = "SELECT id
+                    FROM sesion
+                    WHERE id_actividad = :idActividad
+                      AND id_edicion = 3
+                    ORDER BY fecha_hora_inicio ASC
                     LIMIT 1";
 
             $stmt = $this->conn->prepare($sql);

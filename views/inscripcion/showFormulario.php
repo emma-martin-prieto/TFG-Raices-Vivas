@@ -228,8 +228,7 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                         </div>
 
                         <!-- Resultado -->
-                        <div id="resultado-codigo" class="d-none">
-                            <!-- Se rellena por JS con la respuesta del servidor -->
+                        <div id="resultado-codigo" class="d-none" data-base="<?= $base ?>">
                         </div>
                     </div>
                 </div>
@@ -243,112 +242,5 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
 
 <script src="<?= $base ?>assets/js/bootstrap.bundle.min.js"></script>
 <script src="<?= $base ?>assets/javascript.js"></script>
-<script>
-// ── BUSCADOR DE CÓDIGO DE INSCRIPCIÓN ──────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function () {
-
-    const inputCodigo  = document.getElementById('buscar-codigo');
-    const btnBuscar    = document.getElementById('btn-buscar-codigo');
-    const resultado    = document.getElementById('resultado-codigo');
-    const base         = '<?= $base ?>';
-
-    // Formatear automáticamente: RV-XXXX
-    inputCodigo.addEventListener('input', function () {
-        let val = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        if (val.length > 2) val = 'RV-' + val.replace(/^RV/, '');
-        else val = val;
-        // Reconstruir formato RV-XXXX
-        let clean = this.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
-        this.value = clean;
-    });
-
-    function buscar() {
-        const codigo = inputCodigo.value.trim().toUpperCase();
-
-        if (!codigo || codigo.length < 4) {
-            mostrarResultado('warning', '<i class="bi bi-exclamation-triangle-fill me-2"></i>Introduce un código válido (ej: RV-AB12).');
-            return;
-        }
-
-        // Mostrar spinner mientras carga
-        mostrarResultado('loading', '<div class="d-flex align-items-center gap-2"><div class="spinner-border spinner-border-sm text-verde-rv"></div><span class="text-muted small">Buscando...</span></div>');
-
-        fetch(base + 'index.php?controller=Inscripcion&action=buscarCodigo&codigo=' + encodeURIComponent(codigo))
-            .then(res => res.json())
-            .then(data => {
-                if (data.error) {
-                    mostrarResultado('danger', '<i class="bi bi-x-circle-fill me-2"></i>' + data.error);
-                } else {
-                    mostrarExito(data);
-                }
-            })
-            .catch(() => {
-                mostrarResultado('danger', '<i class="bi bi-x-circle-fill me-2"></i>Error de conexión. Inténtalo de nuevo.');
-            });
-    }
-
-    function mostrarResultado(tipo, html) {
-        resultado.classList.remove('d-none');
-        if (tipo === 'loading') {
-            resultado.innerHTML = `<div class="py-2">${html}</div>`;
-            return;
-        }
-        const clases = { warning: 'alert-warning', danger: 'alert-danger', success: '' };
-        resultado.innerHTML = tipo === 'success'
-            ? html
-            : `<div class="alert ${clases[tipo]} rounded-3 mb-0">${html}</div>`;
-    }
-
-    function mostrarExito(data) {
-        let actividadesHTML = '';
-        if (data.actividades && data.actividades.length > 0) {
-            actividadesHTML = data.actividades.map(act => `
-                <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">
-                    <div>
-                        <span class="fw-semibold small">${act.nombre}</span>
-                        <span class="badge ms-2 ${badgeClass(act.tipo)}">${act.tipo}</span>
-                    </div>
-                    <span class="fw-bold text-verde-rv small">${parseFloat(act.precio).toFixed(2)} €</span>
-                </li>`).join('');
-        } else {
-            actividadesHTML = '<li class="list-group-item text-muted small py-2 px-3">Sin actividades registradas.</li>';
-        }
-
-        resultado.innerHTML = `
-            <div class="border rounded-4 overflow-hidden">
-                <div class="bg-verde-rv text-white px-4 py-3 d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="mb-0 small opacity-75">Inscripción encontrada</p>
-                        <h6 class="mb-0 fw-bold">${data.nombre} ${data.priApe}</h6>
-                    </div>
-                    <span class="badge bg-naranja-rv fs-6" style="letter-spacing:2px; font-family:'Courier New',monospace;">
-                        ${data.codigo}
-                    </span>
-                </div>
-                <div class="px-4 py-3 bg-white border-bottom">
-                    <p class="mb-1 small text-muted">
-                        <i class="bi bi-envelope me-1"></i>${data.email}
-                        &nbsp;·&nbsp;
-                        <i class="bi bi-calendar me-1"></i>Registrado el ${data.fecha_registro}
-                    </p>
-                </div>
-                <div class="bg-white">
-                    <p class="px-4 pt-3 mb-1 small fw-bold text-verde-rv text-uppercase">
-                        <i class="bi bi-bag-check me-1"></i>Actividades reservadas
-                    </p>
-                    <ul class="list-group list-group-flush">${actividadesHTML}</ul>
-                </div>
-            </div>`;
-    }
-
-    function badgeClass(tipo) {
-        const mapa = { taller: 'bg-naranja-rv', ruta: 'bg-primary', charla: 'bg-success', alojamiento: 'bg-info text-dark' };
-        return mapa[tipo] || 'bg-secondary';
-    }
-
-    btnBuscar.addEventListener('click', buscar);
-    inputCodigo.addEventListener('keydown', e => { if (e.key === 'Enter') buscar(); });
-});
-</script>
 </body>
 </html>

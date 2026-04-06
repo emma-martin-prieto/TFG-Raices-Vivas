@@ -150,3 +150,206 @@ window.onload = function () {
   });
 
 };
+
+// 6. BUSCADOR DE INSCRIPCIÓN POR CÓDIGO RV
+document.addEventListener('DOMContentLoaded', function () {
+
+    const inputCodigo = document.getElementById('buscar-codigo');
+    const btnBuscar   = document.getElementById('btn-buscar-codigo');
+    const resultado   = document.getElementById('resultado-codigo');
+
+    if (!inputCodigo || !btnBuscar || !resultado) return;
+
+    const base = resultado.dataset.base || '';
+
+    // Forzar mayúsculas y solo caracteres válidos
+    inputCodigo.addEventListener('input', function () {
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    });
+
+    // ── Helpers para crear elementos DOM
+
+    function crearElemento(tag, clases, texto) {
+        const el = document.createElement(tag);
+        if (clases) el.className = clases;
+        if (texto)  el.textContent = texto;
+        return el;
+    }
+
+    function limpiarResultado() {
+        while (resultado.firstChild) {
+            resultado.removeChild(resultado.firstChild);
+        }
+        resultado.classList.remove('d-none');
+    }
+
+    function mostrarAlerta(tipo, mensaje) {
+        limpiarResultado();
+        const alert = crearElemento('div', `alert alert-${tipo} rounded-3 mb-0 d-flex align-items-center gap-2`);
+        const icono = document.createElement('i');
+        icono.className = tipo === 'warning'
+            ? 'bi bi-exclamation-triangle-fill'
+            : 'bi bi-x-circle-fill';
+        const texto = crearElemento('span', null, mensaje);
+        alert.appendChild(icono);
+        alert.appendChild(texto);
+        resultado.appendChild(alert);
+    }
+
+    function mostrarSpinner() {
+        limpiarResultado();
+        const wrap   = crearElemento('div', 'py-2 d-flex align-items-center gap-2');
+        const spin   = crearElemento('div', 'spinner-border spinner-border-sm text-verde-rv');
+        const texto  = crearElemento('span', 'text-muted small', 'Buscando...');
+        wrap.appendChild(spin);
+        wrap.appendChild(texto);
+        resultado.appendChild(wrap);
+    }
+
+    function badgeClass(tipo) {
+        const mapa = {
+            taller:      'bg-naranja-rv',
+            ruta:        'bg-primary',
+            charla:      'bg-success',
+            alojamiento: 'bg-info text-dark'
+        };
+        return mapa[tipo] || 'bg-secondary';
+    }
+
+    function mostrarDatos(data) {
+        limpiarResultado();
+
+        const wrapper = crearElemento('div', 'border rounded-4 overflow-hidden');
+
+        // ── Cabecera verde ──
+        const cabecera = crearElemento('div', 'bg-verde-rv text-white px-4 py-3 d-flex justify-content-between align-items-center');
+
+        const infoPersona = crearElemento('div');
+        const labelEncontrado = crearElemento('p', 'mb-0 small opacity-75', 'Inscripción encontrada');
+        const nombrePersona   = crearElemento('h6', 'mb-0 fw-bold', data.nombre + ' ' + data.priApe);
+        infoPersona.appendChild(labelEncontrado);
+        infoPersona.appendChild(nombrePersona);
+
+        const badgeCodigo = crearElemento('span', 'badge bg-naranja-rv fs-6', data.codigo);
+        badgeCodigo.style.letterSpacing = '2px';
+        badgeCodigo.style.fontFamily    = "'Courier New', monospace";
+
+        cabecera.appendChild(infoPersona);
+        cabecera.appendChild(badgeCodigo);
+
+        // ── Info email y fecha ──
+        const infoExtra = crearElemento('div', 'px-4 py-3 bg-white border-bottom');
+        const pInfo     = crearElemento('p', 'mb-0 small text-muted');
+
+        const iconoEmail = document.createElement('i');
+        iconoEmail.className = 'bi bi-envelope me-1';
+        pInfo.appendChild(iconoEmail);
+        pInfo.appendChild(document.createTextNode(data.email + ' · '));
+
+        const iconoCal = document.createElement('i');
+        iconoCal.className = 'bi bi-calendar me-1';
+        pInfo.appendChild(iconoCal);
+        pInfo.appendChild(document.createTextNode('Registrado el ' + data.fecha_registro));
+
+        infoExtra.appendChild(pInfo);
+
+        // ── Lista de actividades ──
+        const secActividades = crearElemento('div', 'bg-white');
+        const tituloActs     = crearElemento('p', 'px-4 pt-3 mb-1 small fw-bold text-verde-rv text-uppercase', 'Actividades reservadas');
+        const iconoBag = document.createElement('i');
+        iconoBag.className = 'bi bi-bag-check me-1';
+        tituloActs.prepend(iconoBag);
+
+        const listaActs = crearElemento('ul', 'list-group list-group-flush');
+
+        if (data.actividades && data.actividades.length > 0) {
+            data.actividades.forEach(function (act) {
+                const li     = crearElemento('li', 'list-group-item d-flex justify-content-between align-items-center py-2 px-3');
+                const divIzq = crearElemento('div');
+                const nombre = crearElemento('span', 'fw-semibold small', act.nombre);
+                const badge  = crearElemento('span', 'badge ms-2 ' + badgeClass(act.tipo), act.tipo);
+                divIzq.appendChild(nombre);
+                divIzq.appendChild(badge);
+
+                const precio = crearElemento('span', 'fw-bold text-verde-rv small',
+                    parseFloat(act.precio).toFixed(2) + ' €');
+
+                li.appendChild(divIzq);
+                li.appendChild(precio);
+                listaActs.appendChild(li);
+            });
+        } else {
+            const li = crearElemento('li', 'list-group-item text-muted small py-2 px-3',
+                'Sin actividades registradas.');
+            listaActs.appendChild(li);
+        }
+
+        secActividades.appendChild(tituloActs);
+        secActividades.appendChild(listaActs);
+
+        // ── Montar todo ──
+        wrapper.appendChild(cabecera);
+        wrapper.appendChild(infoExtra);
+        wrapper.appendChild(secActividades);
+        resultado.appendChild(wrapper);
+    }
+
+    // ── Función principal de búsqueda 
+    function buscar() {
+        const codigo = inputCodigo.value.trim().toUpperCase();
+
+        if (!codigo || codigo.length < 4) {
+            mostrarAlerta('warning', 'Introduce un código válido (ej: RV-AB12).');
+            return;
+        }
+
+        mostrarSpinner();
+
+        fetch(base + 'index.php?controller=Inscripcion&action=buscarCodigo&codigo=' + encodeURIComponent(codigo))
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                if (data.error) {
+                    mostrarAlerta('danger', data.error);
+                } else {
+                    mostrarDatos(data);
+                }
+            })
+            .catch(function () {
+                mostrarAlerta('danger', 'Error de conexión. Inténtalo de nuevo.');
+            });
+    }
+
+    btnBuscar.addEventListener('click', buscar);
+    inputCodigo.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') buscar();
+    });
+});
+
+// 7. CARRITO — BOTÓN RESERVAR Y TOAST
+document.addEventListener('DOMContentLoaded', function () {
+
+    const toastEl  = document.getElementById('toastCarrito');
+    const toastMsg = document.getElementById('toastMensaje');
+    if (!toastEl || !toastMsg) return;
+
+    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+
+    document.querySelectorAll('.btn-reservar').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const id   = this.dataset.id;
+            const base = this.dataset.base;
+
+            fetch(base + 'index.php?controller=Carrito&action=aniadir&id=' + id, {
+                credentials: 'same-origin'
+            })
+            .then(r => r.json())
+            .then(data => {
+                toastEl.classList.remove('bg-danger', 'bg-success');
+                toastEl.classList.add(data.ok ? 'bg-success' : 'bg-danger');
+                toastMsg.textContent = data.mensaje;
+                toast.show();
+            });
+        });
+    });
+
+});
