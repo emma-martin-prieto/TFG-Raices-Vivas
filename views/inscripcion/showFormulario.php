@@ -218,8 +218,8 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                             </span>
                             <input type="text" id="buscar-codigo"
                                    class="form-control custom-input text-uppercase"
-                                   placeholder="RV-XXXX"
-                                   maxlength="7"
+                                   placeholder="Introduce tu código de inscripción"
+                                   maxlength="11"
                                    style="letter-spacing: 3px; font-family: 'Courier New', monospace; font-weight: 700;">
                             <button class="btn btn-naranja-rv px-4 fw-bold"
                                     id="btn-buscar-codigo" type="button">

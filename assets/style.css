@@ -490,11 +490,6 @@ header .d-flex a {
     height: 100%;
 }
 
-.card-experiencia:hover {
-    transform: rotate(1.5deg) translateY(-8px);
-    box-shadow: 20px 20px 30px rgba(0,0,0,0.06);
-}
-
 .card-experiencia .position-relative {
     overflow: hidden;
     height: 220px;

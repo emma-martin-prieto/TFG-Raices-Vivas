@@ -183,14 +183,23 @@ document.addEventListener('DOMContentLoaded', function () {
         resultado.classList.remove('d-none');
     }
 
-    function mostrarAlerta(tipo, mensaje) {
+    function mostrarAlerta(tipo, mensaje, codigoDestacado) {
         limpiarResultado();
         const alert = crearElemento('div', `alert alert-${tipo} rounded-3 mb-0 d-flex align-items-center gap-2`);
         const icono = document.createElement('i');
         icono.className = tipo === 'warning'
             ? 'bi bi-exclamation-triangle-fill'
             : 'bi bi-x-circle-fill';
-        const texto = crearElemento('span', null, mensaje);
+        const texto = document.createElement('span');
+        if (codigoDestacado) {
+            texto.textContent = mensaje;
+            const strong = document.createElement('strong');
+            strong.textContent = codigoDestacado;
+            texto.appendChild(strong);
+            texto.appendChild(document.createTextNode('.'));
+        } else {
+            texto.textContent = mensaje;
+        }
         alert.appendChild(icono);
         alert.appendChild(texto);
         resultado.appendChild(alert);
@@ -298,8 +307,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function buscar() {
         const codigo = inputCodigo.value.trim().toUpperCase();
 
-        if (!codigo || codigo.length < 4) {
-            mostrarAlerta('warning', 'Introduce un código válido (ej: RV-AB12).');
+        if (!codigo || codigo.length < 11) {
+            mostrarAlerta('warning', 'Por favor, introduce el código que recibiste al inscribirte.');
             return;
         }
 
@@ -309,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 if (data.error) {
-                    mostrarAlerta('danger', data.error);
+                    mostrarAlerta('danger', data.error, data.codigo_buscado);
                 } else {
                     mostrarDatos(data);
                 }
@@ -334,6 +343,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
 
+    // Actualiza el span de plazas de una tarjeta y su modal con los datos dados
+    function actualizarSpanPlazas(id, libres, total) {
+        libres = Math.max(0, libres);
+        const ratio    = total > 0 ? libres / total : 1;
+        const txt      = libres === 0 ? 'Sin plazas'
+                       : 'Quedan ' + libres + ' plaza' + (libres === 1 ? '' : 's');
+        const txtModal = libres === 0 ? 'Sin plazas disponibles'
+                       : 'Quedan ' + libres + ' de ' + total;
+        let cls, clsModal;
+        if (libres === 0)       { cls = 'text-danger fw-bold';     clsModal = 'text-danger fw-bold'; }
+        else if (ratio <= 0.25) { cls = 'text-danger fw-semibold'; clsModal = 'text-danger'; }
+        else if (ratio <= 0.5)  { cls = 'text-warning fw-semibold'; clsModal = 'text-warning'; }
+        else                    { cls = 'text-muted';               clsModal = 'text-success'; }
+
+        const spanCard = document.getElementById('plazas-' + id);
+        if (spanCard) {
+            spanCard.className = 'small ' + cls;
+            spanCard.innerHTML = '<i class="bi bi-people-fill me-1"></i>' + txt;
+        }
+        const spanModal = document.getElementById('plazas-modal-' + id);
+        if (spanModal) {
+            spanModal.className = clsModal;
+            spanModal.textContent = txtModal;
+        }
+        const btnRes = document.querySelector('.btn-reservar[data-id="' + id + '"]');
+        if (btnRes) {
+            btnRes.disabled = libres === 0;
+            if (libres === 0) btnRes.title = 'No quedan plazas disponibles';
+        }
+    }
+
     document.querySelectorAll('.btn-reservar').forEach(function (btn) {
         btn.addEventListener('click', function () {
             const id   = this.dataset.id;
@@ -348,6 +388,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 toastEl.classList.add(data.ok ? 'bg-success' : 'bg-danger');
                 toastMsg.textContent = data.mensaje;
                 toast.show();
+                // Actualizar contador con los datos frescos que devuelve el servidor
+                if (data.ok && data.plazas_libres !== null && data.plazas_libres !== undefined) {
+                    actualizarSpanPlazas(data.id_actividad, data.plazas_libres, data.cupo_max);
+                }
             });
         });
     });

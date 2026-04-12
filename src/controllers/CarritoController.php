@@ -28,10 +28,23 @@ class CarritoController {
         // Añadir al carrito
         $_SESSION['carrito'][] = $id;
 
+        // Obtener plazas actualizadas de la sesión recién añadida
+        $actividadModel = new ActividadModel();
+        $sesiones = $actividadModel->getSesionesByActividad($id);
+        $plazasLibres = null;
+        $cupoMax = null;
+        if ($sesiones && count($sesiones) > 0) {
+            $plazasLibres = max(0, (int)$sesiones[0]->plazas_libres);
+            $cupoMax = (int)$sesiones[0]->cupo_max;
+        }
+
         echo json_encode([
-            'ok'      => true,
-            'mensaje' => '¡Añadido a tu selección!',
-            'total'   => count($_SESSION['carrito'])
+            'ok'            => true,
+            'mensaje'       => '¡Añadido a tu selección!',
+            'total'         => count($_SESSION['carrito']),
+            'id_actividad'  => $id,
+            'plazas_libres' => $plazasLibres,
+            'cupo_max'      => $cupoMax
         ]);
         exit();
     }

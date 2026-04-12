@@ -136,8 +136,16 @@ function labelFiltro(string $tipo): string {
                                     <?= $act->duracion ?> min
                                 </span>
                                 <?php if ($act->cupo_max): ?>
-                                <span class="small text-muted">
-                                    <i class="bi bi-people-fill me-1"></i><?= $act->cupo_max ?> plazas
+                                <?php
+                                    $libres  = max(0, (int)($act->plazas_libres ?? $act->cupo_max));
+                                    $ratio   = $act->cupo_max > 0 ? $libres / $act->cupo_max : 1;
+                                    if ($libres === 0)      { $cls = 'text-danger fw-bold'; $txt = 'Sin plazas'; }
+                                    elseif ($ratio <= 0.25) { $cls = 'text-danger fw-semibold'; $txt = "Quedan $libres plaza" . ($libres === 1 ? '' : 's'); }
+                                    elseif ($ratio <= 0.5)  { $cls = 'text-warning fw-semibold'; $txt = "Quedan $libres plaza" . ($libres === 1 ? '' : 's'); }
+                                    else                    { $cls = 'text-muted'; $txt = "Quedan $libres plaza" . ($libres === 1 ? '' : 's'); }
+                                ?>
+                                <span class="small <?= $cls ?>" id="plazas-<?= $act->id ?>">
+                                    <i class="bi bi-people-fill me-1"></i><?= $txt ?>
                                 </span>
                                 <?php endif; ?>
                             </div>
@@ -211,9 +219,17 @@ function labelFiltro(string $tipo): string {
                                         <strong><i class="bi bi-clock-history me-1"></i>Hora de fin:</strong>
                                         <?= date('d/m/Y H:i', strtotime($act->fecha_hora_fin)) ?>
                                     </p>
+                                    <?php
+                                        $libresModal = max(0, (int)($act->plazas_libres ?? $act->cupo_max));
+                                        $ratioModal  = $act->cupo_max > 0 ? $libresModal / $act->cupo_max : 1;
+                                        if ($libresModal === 0)         { $clsM = 'text-danger fw-bold'; $txtM = 'Sin plazas disponibles'; }
+                                        elseif ($ratioModal <= 0.25)    { $clsM = 'text-danger'; $txtM = "Quedan $libresModal de {$act->cupo_max}"; }
+                                        elseif ($ratioModal <= 0.5)     { $clsM = 'text-warning'; $txtM = "Quedan $libresModal de {$act->cupo_max}"; }
+                                        else                             { $clsM = 'text-success'; $txtM = "Quedan $libresModal de {$act->cupo_max}"; }
+                                    ?>
                                     <p>
                                         <strong><i class="bi bi-people-fill me-1"></i>Plazas disponibles:</strong>
-                                        <?= $act->cupo_max ?>
+                                        <span class="<?= $clsM ?>" id="plazas-modal-<?= $act->id ?>"><?= $txtM ?></span>
                                     </p>
                                     <?php endif; ?>
 

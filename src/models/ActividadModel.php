@@ -19,7 +19,8 @@ class ActividadModel extends Model {
                                 r.punto_inicio, r.punto_fin,
                                 ch.tema,
                                 al.tipo_alojamiento, al.regimen,
-                                prox.fecha_hora_inicio, prox.fecha_hora_fin, prox.cupo_max
+                                prox.fecha_hora_inicio, prox.fecha_hora_fin, prox.cupo_max,
+                                (prox.cupo_max - COALESCE(prox.inscritos, 0)) AS plazas_libres
                          FROM actividad a
                          JOIN organizador      o  ON a.id_organizador = o.id
                          LEFT JOIN taller      t  ON a.id = t.id_actividad
@@ -27,13 +28,22 @@ class ActividadModel extends Model {
                          LEFT JOIN charla      ch ON a.id = ch.id_actividad
                          LEFT JOIN alojamiento al ON a.id = al.id_actividad
                          LEFT JOIN (
-                             SELECT id_actividad, fecha_hora_inicio, fecha_hora_fin, cupo_max
-                             FROM sesion
-                             WHERE id_edicion = 3
-                             ORDER BY fecha_hora_inicio
+                             SELECT s.id_actividad,
+                                    s.fecha_hora_inicio, s.fecha_hora_fin, s.cupo_max,
+                                    COUNT(ps.id_persona) AS inscritos
+                             FROM sesion s
+                             LEFT JOIN persona_sesion ps ON s.id = ps.id_sesion
+                             WHERE s.id_edicion = 3
+                               AND s.id = (
+                                   SELECT id FROM sesion s2
+                                   WHERE s2.id_actividad = s.id_actividad
+                                     AND s2.id_edicion = 3
+                                   ORDER BY s2.fecha_hora_inicio ASC
+                                   LIMIT 1
+                               )
+                             GROUP BY s.id
                          ) prox ON a.id = prox.id_actividad
                          WHERE a.estado = 'activa'
-                         GROUP BY a.id
                          ORDER BY a.tipo, a.nombre";
 
             $sentencia = $this->conn->prepare($consulta);

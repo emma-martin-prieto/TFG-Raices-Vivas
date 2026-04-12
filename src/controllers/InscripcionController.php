@@ -87,10 +87,15 @@ class InscripcionController {
             return;
         }
 
-        // Generar código único RV-XXXX
+        // Generar código único RV-XXXXXXXX (8 caracteres alfanuméricos, sin 0/O/1/I para evitar confusiones)
         $personaModel = new PersonaModel();
+        $caracteres   = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         do {
-            $codigo = 'RV-' . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+            $aleatorio = '';
+            for ($i = 0; $i < 8; $i++) {
+                $aleatorio .= $caracteres[random_int(0, strlen($caracteres) - 1)];
+            }
+            $codigo = 'RV-' . $aleatorio;
         } while ($personaModel->existeCodigo($codigo));
 
         // Crear entidad y guardar en BD
@@ -171,7 +176,10 @@ class InscripcionController {
         $resultado    = $personaModel->getByCodigoConActividades($codigo);
 
         if (!$resultado) {
-            echo json_encode(['error' => 'No se encontró ninguna inscripción con el código <strong>' . htmlspecialchars($codigo) . '</strong>.']);
+            echo json_encode([
+                'error'          => 'No se encontró ninguna inscripción con el código ',
+                'codigo_buscado' => htmlspecialchars($codigo)
+            ]);
             exit();
         }
 
