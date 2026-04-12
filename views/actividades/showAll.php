@@ -35,6 +35,30 @@ function imagenActividad(object $act): string {
     return $mapa[$act->nombre] ?? 'logo.png';
 }
 
+function imagenesDetalle(object $act): array {
+    $mapa = [
+        'Cocina de la Sierra'                          => ['postre.jpg', 'cocina-tipica.jpg'],
+        'Cestos de Mimbre'                             => ['mimbre.JPG', 'mimbre-grande.jpeg'],
+        'Pesca Tradicional'                            => ['cultivo-pesca.jpg', 'pesca-grande.jpg'],
+        'Cultivo Tradicional'                          => ['cultivo.jpeg', 'cultivo.jpg'],
+        'Juegos Tradicionales'                         => ['juegos-tradicionales2.jpeg', 'juegos-tradicionales.jpg'],
+        'Laguna Grande de Gredos'                      => ['laguna-grande.jpg'],
+        'Subida a La Espesura'                         => ['espesura-grande.jpeg', 'espesura.jpeg'],
+        '5 Lagunas de Gredos'                          => ['5lagunas.jpg', '5lagunas2.jpg'],
+        'Senda del Río Tormes'                         => ['ruta-rio.jpg', 'rio-grande.jpeg', 'Angostura2.jpg', 'angostura3.jpg'],
+        'Secretos de Gredos'                           => ['fauna-grande.jpg', 'flora.jpg'],
+        'Memoria de la Pobreza'                        => ['abuelos-grande.jpeg', 'abuelos.jpeg'],
+        'La Elaboración de la Matanza'                 => ['matanza2.jpg', 'matanza.jpg'],
+        'La Vida del Pastor'                           => ['pastores-grande.jpeg', 'pastores.jpg'],
+        'Lo que Gredos Calla'                          => ['anecdots-a-grande.jpg', 'anecdotas.jpg'],
+        'Bailes, Vestimenta y Canciones Tradicionales' => ['bailes.jpeg', 'baile-grande.jpeg'],
+        'La Casa de la Plaza'                          => ['casa-rural.JPG', 'angostura3.jpg', 'angostura-de-tormes.jpg'],
+        'Casa Rural El Pinta'                          => ['casa-aliseda2.jpg', 'alisea2.jpg', 'alisea3.jpg', 'La_Aliseda_de_Tormes.jpg'],
+        'Casa Rural La Tabilla'                        => ['casa-navalperal.jpg', 'navalperal.jpg', 'Navalperal2.jpg', 'Navalperal3.jpg'],
+    ];
+    return $mapa[$act->nombre] ?? [imagenActividad($act)];
+}
+
 function iconoActividad(object $act): string {
     return match($act->tipo) {
         'taller'      => 'bi-hand-index-thumb',
@@ -175,9 +199,41 @@ function labelFiltro(string $tipo): string {
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body p-4 pt-0 text-center">
-                                <img src="<?= $base ?>assets/img/<?= imagenActividad($act) ?>"
-                                     class="img-fluid rounded-4 mb-3 shadow-sm"
-                                     alt="<?= htmlspecialchars($act->nombre) ?>">
+                                <?php $fotos = imagenesDetalle($act); ?>
+                                <?php if (count($fotos) === 1): ?>
+                                    <img src="<?= $base ?>assets/img/<?= $fotos[0] ?>"
+                                         class="img-fluid rounded-4 mb-3 shadow-sm"
+                                         style="max-height:320px; width:100%; object-fit:cover;"
+                                         alt="<?= htmlspecialchars($act->nombre) ?>">
+                                <?php else: ?>
+                                    <div id="carousel-<?= $act->id ?>" class="carousel slide rounded-4 mb-3 shadow-sm overflow-hidden" data-bs-ride="false" style="max-height:320px;">
+                                        <div class="carousel-indicators">
+                                            <?php foreach ($fotos as $i => $foto): ?>
+                                            <button type="button"
+                                                    data-bs-target="#carousel-<?= $act->id ?>"
+                                                    data-bs-slide-to="<?= $i ?>"
+                                                    class="<?= $i === 0 ? 'active' : '' ?>"
+                                                    aria-label="Foto <?= $i + 1 ?>"></button>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <div class="carousel-inner" style="max-height:320px;">
+                                            <?php foreach ($fotos as $i => $foto): ?>
+                                            <div class="carousel-item <?= $i === 0 ? 'active' : '' ?>">
+                                                <img src="<?= $base ?>assets/img/<?= $foto ?>"
+                                                     class="d-block w-100"
+                                                     style="height:320px; object-fit:cover;"
+                                                     alt="<?= htmlspecialchars($act->nombre) ?> - foto <?= $i + 1 ?>">
+                                            </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-<?= $act->id ?>" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon"></span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-<?= $act->id ?>" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon"></span>
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
                                 <h2 class="fw-bold text-verde-rv"><?= htmlspecialchars($act->nombre) ?></h2>
                                 <p class="text-muted text-start"><?= htmlspecialchars($act->descripcion_general) ?></p>
 
@@ -201,9 +257,9 @@ function labelFiltro(string $tipo): string {
 
                                     <?php elseif ($act->tipo === 'alojamiento'): ?>
                                         <p><strong>Tipo:</strong> <?= htmlspecialchars($act->tipo_alojamiento) ?></p>
-                                        <p><strong>Noches:</strong> <?= $act->noches ?></p>
-                                        <p><strong>Régimen:</strong> <?= str_replace('_', ' ', $act->regimen) ?></p>
-                                        <?php if ($act->condiciones): ?>
+                                        <p><strong>Noches:</strong> <?= $act->noches ?? '-' ?></p>
+                                        <p><strong>Régimen:</strong> <?= str_replace('_', ' ', $act->regimen ?? '') ?></p>
+                                        <?php if (!empty($act->condiciones)): ?>
                                         <p><strong>Condiciones:</strong> <?= htmlspecialchars($act->condiciones) ?></p>
                                         <?php endif; ?>
                                     <?php endif; ?>

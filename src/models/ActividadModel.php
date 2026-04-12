@@ -18,7 +18,7 @@ class ActividadModel extends Model {
                                 r.dificultad, r.distancia_km, r.recomendaciones,
                                 r.punto_inicio, r.punto_fin,
                                 ch.tema,
-                                al.tipo_alojamiento, al.regimen,
+                                al.tipo_alojamiento, al.noches, al.regimen, al.condiciones,
                                 prox.fecha_hora_inicio, prox.fecha_hora_fin, prox.cupo_max,
                                 (prox.cupo_max - COALESCE(prox.inscritos, 0)) AS plazas_libres
                          FROM actividad a
