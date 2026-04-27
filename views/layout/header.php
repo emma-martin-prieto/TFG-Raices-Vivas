@@ -35,21 +35,21 @@ $base = Parameters::$BASE_URL;
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle fw-semibold"
-                           href="<?= $base ?>index.php?controller=Festival&action=showFestival"
+                           href="<?= $base ?>Festival/showFestival"
                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Festival
                         </a>
                         <ul class="dropdown-menu border-0 shadow-lg">
-                            <li><a class="dropdown-item" href="<?= $base ?>index.php?controller=Festival&action=showFestival#historia">Historia</a></li>
-                            <li><a class="dropdown-item" href="<?= $base ?>index.php?controller=Festival&action=showFestival#pueblos-vecinos">Comunidad Gredos Interior</a></li>
-                            <li><a class="dropdown-item" href="<?= $base ?>index.php?controller=Festival&action=showFestival#objetivos">Objetivos</a></li>
-                            <li><a class="dropdown-item" href="<?= $base ?>index.php?controller=Festival&action=showFestival#ediciones">Ediciones anteriores</a></li>
+                            <li><a class="dropdown-item" href="<?= $base ?>Festival/showFestival#historia">Historia</a></li>
+                            <li><a class="dropdown-item" href="<?= $base ?>Festival/showFestival#pueblos-vecinos">Comunidad Gredos Interior</a></li>
+                            <li><a class="dropdown-item" href="<?= $base ?>Festival/showFestival#objetivos">Objetivos</a></li>
+                            <li><a class="dropdown-item" href="<?= $base ?>Festival/showFestival#ediciones">Ediciones anteriores</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link fw-semibold"
-                           href="<?= $base ?>index.php?controller=Actividad&action=showExperiencias">
+                           href="<?= $base ?>Actividad/showExperiencias">
                             Experiencias
                         </a>
                     </li>
@@ -57,7 +57,7 @@ $base = Parameters::$BASE_URL;
                 </ul>
                 <div class="d-flex">
                     <a class="btn btn-naranja rounded-pill px-4"
-                       href="<?= $base ?>index.php?controller=Inscripcion&action=showFormulario">
+                       href="<?= $base ?>Inscripcion/showFormulario">
                         Inscríbete
                     </a>
                 </div>

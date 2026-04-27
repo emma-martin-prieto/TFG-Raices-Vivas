@@ -1,6 +1,7 @@
 <?php
 namespace RaicesVivas\Controllers;
 
+use RaicesVivas\Config\Parameters;
 use RaicesVivas\Models\ActividadModel;
 
 class CarritoController {
@@ -59,14 +60,14 @@ class CarritoController {
             );
         }
 
-        header('Location: ' . $_SERVER['HTTP_REFERER'] ?? 'index.php?controller=Inscripcion&action=showFormulario');
+        header('Location: ' . $_SERVER['HTTP_REFERER'] ?? 'Inscripcion/showFormulario');
         exit();
     }
 
     /*Vacía el carrito entero.*/
     public function vaciar(): void {
         unset($_SESSION['carrito']);
-        header('Location: index.php?controller=Actividad&action=showExperiencias');
+        header('Location: ' . Parameters::$BASE_URL . 'Actividad/showExperiencias');
         exit();
     }
 }

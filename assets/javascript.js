@@ -167,52 +167,33 @@ document.addEventListener('DOMContentLoaded', function () {
         this.value = this.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
     });
 
-    // ── Helpers para crear elementos DOM
-
-    function crearElemento(tag, clases, texto) {
-        const el = document.createElement(tag);
-        if (clases) el.className = clases;
-        if (texto)  el.textContent = texto;
-        return el;
-    }
+    // ── Helpers
 
     function limpiarResultado() {
-        while (resultado.firstChild) {
-            resultado.removeChild(resultado.firstChild);
-        }
+        resultado.innerHTML = '';
         resultado.classList.remove('d-none');
+    }
+
+    function clonar(id) {
+        return document.getElementById(id).content.cloneNode(true);
     }
 
     function mostrarAlerta(tipo, mensaje, codigoDestacado) {
         limpiarResultado();
-        const alert = crearElemento('div', `alert alert-${tipo} rounded-3 mb-0 d-flex align-items-center gap-2`);
-        const icono = document.createElement('i');
-        icono.className = tipo === 'warning'
-            ? 'bi bi-exclamation-triangle-fill'
-            : 'bi bi-x-circle-fill';
-        const texto = document.createElement('span');
+        const node = clonar('tpl-alerta-' + tipo);
+        node.querySelector('.js-alerta-texto').textContent = mensaje;
         if (codigoDestacado) {
-            texto.textContent = mensaje;
-            const strong = document.createElement('strong');
-            strong.textContent = codigoDestacado;
-            texto.appendChild(strong);
-            texto.appendChild(document.createTextNode('.'));
-        } else {
-            texto.textContent = mensaje;
+            const codigo = node.querySelector('.js-alerta-codigo');
+            const punto  = node.querySelector('.js-alerta-punto');
+            if (codigo) { codigo.textContent = codigoDestacado; codigo.classList.remove('d-none'); }
+            if (punto)  { punto.classList.remove('d-none'); }
         }
-        alert.appendChild(icono);
-        alert.appendChild(texto);
-        resultado.appendChild(alert);
+        resultado.appendChild(node);
     }
 
     function mostrarSpinner() {
         limpiarResultado();
-        const wrap   = crearElemento('div', 'py-2 d-flex align-items-center gap-2');
-        const spin   = crearElemento('div', 'spinner-border spinner-border-sm text-verde-rv');
-        const texto  = crearElemento('span', 'text-muted small', 'Buscando...');
-        wrap.appendChild(spin);
-        wrap.appendChild(texto);
-        resultado.appendChild(wrap);
+        resultado.appendChild(clonar('tpl-spinner'));
     }
 
     function badgeClass(tipo) {
@@ -228,84 +209,60 @@ document.addEventListener('DOMContentLoaded', function () {
     function mostrarDatos(data) {
         limpiarResultado();
 
-        const wrapper = crearElemento('div', 'border rounded-4 overflow-hidden');
+        // Clonar template principal
+        const node = clonar('tpl-resultado');
 
-        // ── Cabecera verde ──
-        const cabecera = crearElemento('div', 'bg-verde-rv text-white px-4 py-3 d-flex justify-content-between align-items-center');
+        // Rellenar datos personales
+        node.querySelector('.js-nombre-persona').textContent = data.nombre + ' ' + data.priApe;
+        node.querySelector('.js-codigo-persona').textContent = data.codigo;
+        node.querySelector('.js-email-persona').textContent  = data.email;
+        node.querySelector('.js-fecha-persona').textContent  = data.fecha_registro;
 
-        const infoPersona = crearElemento('div');
-        const labelEncontrado = crearElemento('p', 'mb-0 small opacity-75', 'Inscripción encontrada');
-        const nombrePersona   = crearElemento('h6', 'mb-0 fw-bold', data.nombre + ' ' + data.priApe);
-        infoPersona.appendChild(labelEncontrado);
-        infoPersona.appendChild(nombrePersona);
-
-        const badgeCodigo = crearElemento('span', 'badge bg-naranja-rv fs-6', data.codigo);
-        badgeCodigo.style.letterSpacing = '2px';
-        badgeCodigo.style.fontFamily    = "'Courier New', monospace";
-
-        cabecera.appendChild(infoPersona);
-        cabecera.appendChild(badgeCodigo);
-
-        // ── Info email y fecha ──
-        const infoExtra = crearElemento('div', 'px-4 py-3 bg-white border-bottom');
-        const pInfo     = crearElemento('p', 'mb-0 small text-muted');
-
-        const iconoEmail = document.createElement('i');
-        iconoEmail.className = 'bi bi-envelope me-1';
-        pInfo.appendChild(iconoEmail);
-        pInfo.appendChild(document.createTextNode(data.email + ' · '));
-
-        const iconoCal = document.createElement('i');
-        iconoCal.className = 'bi bi-calendar me-1';
-        pInfo.appendChild(iconoCal);
-        pInfo.appendChild(document.createTextNode('Registrado el ' + data.fecha_registro));
-
-        infoExtra.appendChild(pInfo);
-
-        // ── Lista de actividades ──
-        const secActividades = crearElemento('div', 'bg-white');
-        const tituloActs     = crearElemento('p', 'px-4 pt-3 mb-1 small fw-bold text-verde-rv text-uppercase', 'Actividades reservadas');
-        const iconoBag = document.createElement('i');
-        iconoBag.className = 'bi bi-bag-check me-1';
-        tituloActs.prepend(iconoBag);
-
-        const listaActs = crearElemento('ul', 'list-group list-group-flush');
+        // Rellenar lista de actividades
+        const lista = node.querySelector('.js-lista-actividades');
 
         if (data.actividades && data.actividades.length > 0) {
             data.actividades.forEach(function (act) {
-                const li     = crearElemento('li', 'list-group-item d-flex justify-content-between align-items-center py-2 px-3');
-                const divIzq = crearElemento('div');
-                const nombre = crearElemento('span', 'fw-semibold small', act.nombre);
-                const badge  = crearElemento('span', 'badge ms-2 ' + badgeClass(act.tipo), act.tipo);
-                divIzq.appendChild(nombre);
-                divIzq.appendChild(badge);
+                const cancelada = act.estado === 'cancelada';
+                const tplId     = cancelada ? 'tpl-actividad-cancelada' : 'tpl-actividad-normal';
+                const li        = clonar(tplId);
 
-                const precio = crearElemento('span', 'fw-bold text-verde-rv small',
-                    parseFloat(act.precio).toFixed(2) + ' €');
+                li.querySelector('.js-act-nombre').textContent = act.nombre;
+                li.querySelector('.js-act-precio').textContent = parseFloat(act.precio).toFixed(2) + ' €';
 
-                li.appendChild(divIzq);
-                li.appendChild(precio);
-                listaActs.appendChild(li);
+                if (!cancelada) {
+                    const badge = li.querySelector('.js-act-badge');
+                    badge.textContent = act.tipo;
+                    badge.classList.add(badgeClass(act.tipo));
+                } else {
+                    const motivoEl = li.querySelector('.js-act-motivo');
+                    if (act.motivo_cancelacion && act.motivo_cancelacion.trim() !== '') {
+                        motivoEl.textContent = 'Motivo: ' + act.motivo_cancelacion;
+                    } else {
+                        motivoEl.remove();
+                    }
+                }
+
+                lista.appendChild(li);
             });
         } else {
-            const li = crearElemento('li', 'list-group-item text-muted small py-2 px-3',
-                'Sin actividades registradas.');
-            listaActs.appendChild(li);
+            const liVacio = clonar('tpl-sin-actividades');
+            lista.appendChild(liVacio);
         }
 
-        secActividades.appendChild(tituloActs);
-        secActividades.appendChild(listaActs);
-
-        // ── Montar todo ──
-        wrapper.appendChild(cabecera);
-        wrapper.appendChild(infoExtra);
-        wrapper.appendChild(secActividades);
-        resultado.appendChild(wrapper);
+        resultado.appendChild(node);
     }
 
     // ── Función principal de búsqueda 
     function buscar() {
         const codigo = inputCodigo.value.trim().toUpperCase();
+
+        // Código especial de administrador — redirige directamente sin validar longitud
+        if (codigo === 'RV-ADMIN') {
+            mostrarSpinner();
+            window.location.href = base + 'index.php?controller=Admin&action=verificarCodigo&codigo=RV-ADMIN';
+            return;
+        }
 
         if (!codigo || codigo.length < 11) {
             mostrarAlerta('warning', 'Por favor, introduce el código que recibiste al inscribirte.');
@@ -317,7 +274,9 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(base + 'index.php?controller=Inscripcion&action=buscarCodigo&codigo=' + encodeURIComponent(codigo))
             .then(function (res) { return res.json(); })
             .then(function (data) {
-                if (data.error) {
+                if (data.redirect) {
+                    window.location.href = base + data.redirect;
+                } else if (data.error) {
                     mostrarAlerta('danger', data.error, data.codigo_buscado);
                 } else {
                     mostrarDatos(data);
@@ -334,6 +293,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+
 // 7. CARRITO — BOTÓN RESERVAR Y TOAST
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -343,7 +303,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
 
-    // Actualiza el span de plazas de una tarjeta y su modal con los datos dados
     function actualizarSpanPlazas(id, libres, total) {
         libres = Math.max(0, libres);
         const ratio    = total > 0 ? libres / total : 1;
@@ -352,19 +311,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const txtModal = libres === 0 ? 'Sin plazas disponibles'
                        : 'Quedan ' + libres + ' de ' + total;
         let cls, clsModal;
-        if (libres === 0)       { cls = 'text-danger fw-bold';     clsModal = 'text-danger fw-bold'; }
-        else if (ratio <= 0.25) { cls = 'text-danger fw-semibold'; clsModal = 'text-danger'; }
+        if (libres === 0)       { cls = 'text-danger fw-bold';      clsModal = 'text-danger fw-bold'; }
+        else if (ratio <= 0.25) { cls = 'text-danger fw-semibold';  clsModal = 'text-danger'; }
         else if (ratio <= 0.5)  { cls = 'text-warning fw-semibold'; clsModal = 'text-warning'; }
-        else                    { cls = 'text-muted';               clsModal = 'text-success'; }
+        else                    { cls = 'text-muted';                clsModal = 'text-success'; }
 
         const spanCard = document.getElementById('plazas-' + id);
         if (spanCard) {
-            spanCard.className = 'small ' + cls;
-            spanCard.innerHTML = '<i class="bi bi-people-fill me-1"></i>' + txt;
+            spanCard.className   = 'small ' + cls;
+            spanCard.innerHTML   = '<i class="bi bi-people-fill me-1"></i>' + txt;
         }
         const spanModal = document.getElementById('plazas-modal-' + id);
         if (spanModal) {
-            spanModal.className = clsModal;
+            spanModal.className  = clsModal;
             spanModal.textContent = txtModal;
         }
         const btnRes = document.querySelector('.btn-reservar[data-id="' + id + '"]');
@@ -382,18 +341,65 @@ document.addEventListener('DOMContentLoaded', function () {
             fetch(base + 'index.php?controller=Carrito&action=aniadir&id=' + id, {
                 credentials: 'same-origin'
             })
-            .then(r => r.json())
-            .then(data => {
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
                 toastEl.classList.remove('bg-danger', 'bg-success');
                 toastEl.classList.add(data.ok ? 'bg-success' : 'bg-danger');
                 toastMsg.textContent = data.mensaje;
                 toast.show();
-                // Actualizar contador con los datos frescos que devuelve el servidor
                 if (data.ok && data.plazas_libres !== null && data.plazas_libres !== undefined) {
                     actualizarSpanPlazas(data.id_actividad, data.plazas_libres, data.cupo_max);
                 }
             });
         });
     });
+});
 
+// 8. PANEL ADMIN — tooltips y modal de confirmación de borrado
+document.addEventListener('DOMContentLoaded', function () {
+
+    // Tooltips (solo en páginas que los usen)
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
+        new bootstrap.Tooltip(el);
+    });
+
+    // Modal de confirmación de borrado de actividad
+    document.querySelectorAll('.btn-eliminar').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var nombre = this.dataset.nombre;
+            var id     = this.dataset.id;
+            var modalNombre = document.getElementById('modal-nombre-act');
+            var modalInput  = document.getElementById('input-id-eliminar');
+            var modalEl     = document.getElementById('modalEliminar');
+            if (modalNombre) modalNombre.textContent = nombre;
+            if (modalInput)  modalInput.value        = id;
+            if (modalEl)     new bootstrap.Modal(modalEl).show();
+        });
+    });
+});
+
+
+// 9. FORMULARIO ADMIN — mostrar panel de subtipo según tipo seleccionado
+document.addEventListener('DOMContentLoaded', function () {
+ 
+    // Si no hay radios de tipo, esta página no es el formulario admin → salir
+    var radios = document.querySelectorAll('input[name="tipo"]');
+    if (!radios.length) return;
+ 
+    function mostrarPanel(tipo) {
+        radios.forEach(function (radio) {
+            var panel = document.getElementById('panel-' + radio.value);
+            if (!panel) return;
+            panel.classList.toggle('activo', radio.value === tipo);
+        });
+    }
+ 
+    radios.forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            mostrarPanel(this.value);
+        });
+    });
+ 
+    var seleccionado = document.querySelector('input[name="tipo"]:checked');
+    if (seleccionado) mostrarPanel(seleccionado.value);
 });

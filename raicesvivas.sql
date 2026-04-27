@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-04-2026 a las 10:54:35
+-- Tiempo de generación: 27-04-2026 a las 21:22:40
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -45,7 +45,7 @@ CREATE TABLE `actividad` (
 
 INSERT INTO `actividad` (`id`, `nombre`, `tipo`, `descripcion_general`, `precio`, `duracion`, `estado`, `motivo_cancelacion`, `id_organizador`) VALUES
 (1, 'Cocina de la Sierra', 'taller', 'Elaboración de las famosas patatas machaconas con pimentón de la Vera y los huesillos, un postre típico de la zona. Una experiencia para chuparse los dedos en una cocina de piedra original con productos locales.', 5.00, 180, 'activa', NULL, 1),
-(2, 'Cestos de Mimbre', 'taller', 'Conrado Prieto, maestro artesano local, te enseñará a domar el mimbre para crear tu propia cesta para ir a pescar o incluso gorras. Aprenderás cómo se recolectaba y trataba el material a la orilla del río Tormes siguiendo técnicas centenarias.', 0.00, 240, 'activa', NULL, 3),
+(2, 'Cestos de Mimbre', 'taller', 'Conrado Prieto, maestro artesano local, te enseñará a domar el mimbre para crear tu propia cesta para ir a pescar o incluso gorras. Aprenderás cómo se recolectaba y trataba el material a la orilla del río Tormes siguiendo técnicas centenarias.', 0.00, 90, 'activa', NULL, 3),
 (3, 'Pesca Tradicional', 'taller', 'Descubre cómo los habitantes de la sierra aprovechaban el río. Aprenderás las técnicas de pesca manual y con caña en las aguas del Tormes, además de diferentes \"trucos\" para pescar más truchas.', 0.00, 180, 'activa', NULL, 1),
 (4, 'Cultivo Tradicional', 'taller', 'Descubre el sistema de riego tradicional que mantiene vivos los huertos de montaña junto con sus herramientas tradicionales, además de la fruta, verdura y hortalizas que se siembran.', 0.00, 150, 'activa', NULL, 2),
 (5, 'Juegos Tradicionales', 'taller', 'Aprenderás juegos tradicionales a los que se jugaban todos los amigos en las calles de los pueblos como El Burro, Las Tabas, La Rana o La Calva.', 2.50, 120, 'activa', NULL, 1),
@@ -247,9 +247,9 @@ CREATE TABLE `persona` (
 --
 
 INSERT INTO `persona` (`id`, `codigo`, `nombre`, `priApe`, `segApe`, `fecha_nacimiento`, `email`, `rol`, `fecha_registro`, `id_localidad`) VALUES
-(4, 'RV-9430', 'Hugo', 'Salguero', NULL, '2008-11-03', 'hugo@gmail.com', 'USER', '2026-04-06 10:19:39', 10),
-(5, 'RV-6520', 'Emma', 'Martín', 'Prieto', '2006-03-16', 'emma.marpri@gmail.com', 'USER', '2026-04-06 10:24:37', 6),
-(6, 'RV-0358', 'Ana', 'Gomez', NULL, '1956-02-15', 'ana@gmail.com', 'USER', '2026-04-06 10:34:02', 20);
+(7, 'RV-MZG93Z7H', 'Hugo', 'Salguero', NULL, '2008-11-03', 'hugo@gmail.com', 'USER', '2026-04-12 22:49:53', 31),
+(8, 'RV-ADMIN000', 'Emma', 'Martín', 'Prieto', '2006-03-16', 'emma.marpri@gmail.com', 'ADMIN', '2026-04-12 23:12:56', 6),
+(12, 'RV-2DUFP53S', 'Jorge', 'Barco', 'Garcia', '2001-12-29', 'jorge@gmail.com', 'USER', '2026-04-19 18:50:20', 31);
 
 -- --------------------------------------------------------
 
@@ -267,13 +267,14 @@ CREATE TABLE `persona_sesion` (
 --
 
 INSERT INTO `persona_sesion` (`id_persona`, `id_sesion`) VALUES
-(4, 1),
-(5, 3),
-(5, 8),
-(5, 13),
-(5, 17),
-(6, 7),
-(6, 13);
+(7, 10),
+(7, 11),
+(7, 19),
+(8, 1),
+(8, 3),
+(12, 3),
+(12, 10),
+(12, 16);
 
 -- --------------------------------------------------------
 
@@ -456,7 +457,7 @@ ALTER TABLE `taller`
 -- AUTO_INCREMENT de la tabla `actividad`
 --
 ALTER TABLE `actividad`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de la tabla `edicion`
@@ -480,7 +481,7 @@ ALTER TABLE `organizador`
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `sesion`

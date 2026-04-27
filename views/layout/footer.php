@@ -20,8 +20,8 @@
                     <nav class="nav-vertical">
                         <a href="<?= $base ?>">Inicio</a>
                         <a href="<?= $base ?>festival.html">El Festival</a>
-                        <a href="<?= $base ?>index.php?controller=Actividad&action=showExperiencias">Experiencias</a>
-                        <a href="<?= $base ?>index.php?controller=Inscripcion&action=showFormulario">Inscripciones</a>
+                        <a href="<?= $base ?>Actividad/showExperiencias">Experiencias</a>
+                        <a href="<?= $base ?>Inscripcion/showFormulario">Inscripciones</a>
                     </nav>
                 </div>
             </div>

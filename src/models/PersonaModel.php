@@ -109,7 +109,7 @@ class PersonaModel extends Model {
         try {
             // 1. Buscar la persona
             $sql = "SELECT p.id, p.codigo, p.nombre, p.priApe, p.segApe,
-                           p.email, p.fecha_nacimiento,
+                           p.email, p.fecha_nacimiento, p.rol,
                            DATE_FORMAT(p.fecha_registro, '%d/%m/%Y') AS fecha_registro,
                            l.nombre AS localidad
                     FROM persona p
@@ -126,6 +126,7 @@ class PersonaModel extends Model {
 
             // 2. Buscar sus actividades via persona_sesion
             $sql2 = "SELECT a.id, a.nombre, a.precio, a.tipo,
+                            a.estado, a.motivo_cancelacion,
                             s.fecha_hora_inicio
                      FROM persona_sesion ps
                      JOIN sesion    s ON ps.id_sesion    = s.id
@@ -147,13 +148,16 @@ class PersonaModel extends Model {
                 'email'           => $persona->email,
                 'fecha_nacimiento'=> $persona->fecha_nacimiento,
                 'fecha_registro'  => $persona->fecha_registro,
+                'rol'             => $persona->rol,
                 'localidad'       => $persona->localidad,
                 'actividades'     => array_map(fn($a) => [
-                    'id'                => $a->id,
-                    'nombre'            => $a->nombre,
-                    'precio'            => $a->precio,
-                    'tipo'              => $a->tipo,
-                    'fecha_hora_inicio' => $a->fecha_hora_inicio,
+                    'id'                  => $a->id,
+                    'nombre'              => $a->nombre,
+                    'precio'              => $a->precio,
+                    'tipo'                => $a->tipo,
+                    'estado'              => $a->estado,
+                    'motivo_cancelacion'  => $a->motivo_cancelacion,
+                    'fecha_hora_inicio'   => $a->fecha_hora_inicio,
                 ], $actividades)
             ];
 

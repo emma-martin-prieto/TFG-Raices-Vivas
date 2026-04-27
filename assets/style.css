@@ -635,9 +635,6 @@ header .d-flex a {
 
 .bg-naranja-rv {
     background-color: #e67e22 !important;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
 }
 
 .curiosidad {
@@ -825,4 +822,332 @@ header .d-flex a {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* -- 8. PANEL DE ADMINISTRACIÓN --*/
+
+.admin-topbar {
+    background: var(--verde-rv);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.admin-topbar .brand {
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.admin-badge {
+    background: var(--naranja-rv);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Tabla del panel */
+.admin-table th {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+.admin-table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.admin-table tr:hover {
+    background-color: #f0f7f3;
+}
+
+.btn-accion {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.precio-col {
+    font-weight: 600;
+    color: var(--verde-rv);
+    font-family: 'Courier New', monospace;
+}
+
+/* Formulario de actividad */
+.section-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-card h6 {
+    font-weight: 700;
+    color: var(--verde-rv);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    margin-bottom: 1.25rem;
+    border-bottom: 2px solid #e8f4ee;
+    padding-bottom: 0.75rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--verde-rv);
+    box-shadow: 0 0 0 3px rgba(35,124,74,0.12);
+}
+
+/* Paneles de subtipo (taller, ruta, charla, alojamiento) */
+.subtipo-panel {
+    display: none;
+}
+
+.subtipo-panel.activo {
+    display: block;
+}
+
+/* Selector de tipo con radio buttons estilizados */
+.tipo-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.tipo-radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.25rem;
+    border: 2px solid #dee2e6;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.tipo-radio-group input[type="radio"] {
+    display: none;
+}
+
+.tipo-radio-group input[type="radio"]:checked + label {
+    border-color: var(--verde-rv);
+    background: #e8f4ee;
+    color: var(--verde-rv);
+}
+
+/* Input de código de inscripción */
+#buscar-codigo {
+    letter-spacing: 3px;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+}
+
+/* Sticky sidebar del formulario de inscripción */
+.sidebar-sticky {
+    top: 90px;
+}
+
+/* ── PÁGINA LOGIN ADMIN ─*/
+.admin-login-body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a5c38 0%, #237c4a 60%, #2d9e5f 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-login-wrap {
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-login-caja {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2.75rem 2.25rem 2.25rem;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+}
+
+.admin-login-icono {
+    font-size: 3rem;
+    color: var(--verde-rv);
+    margin-bottom: 1rem;
+    line-height: 1;
+}
+
+.admin-login-titulo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.4rem;
+}
+
+.admin-login-sub {
+    font-size: 0.875rem;
+    color: #888;
+    margin-bottom: 1.75rem;
+}
+
+.admin-login-input-wrap {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.admin-login-input {
+    flex: 1;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.admin-login-input:focus  { border-color: var(--verde-rv); }
+.admin-login-input.input-error { border-color: #dc3545; }
+
+.admin-login-btn {
+    background: var(--verde-rv);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0 1.2rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+.admin-login-btn:hover  { background: #1a5e38; }
+.admin-login-btn:active { transform: scale(0.96); }
+
+.admin-login-error {
+    color: #dc3545;
+    font-size: 0.82rem;
+    text-align: left;
+    background: #fff5f5;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.admin-login-volver {
+    display: inline-block;
+    margin-top: 1.25rem;
+    color: #aaa;
+    font-size: 0.82rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.admin-login-volver:hover { color: var(--verde-rv); }
+
+/* -- 9. PÁGINA DE ERROR 404 -- */
+
+.error-card {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(35,124,74,0.12);
+    padding: 3.5rem 4rem;
+    text-align: center;
+    max-width: 520px;
+    width: 100%;
+}
+
+.error-numero {
+    font-size: 7rem;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--verde-rv), var(--naranja-rv));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.error-icono {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.error-titulo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 0.75rem;
+}
+
+.error-texto {
+    color: #6c757d;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+}
+
+.btn-volver {
+    background: var(--verde-rv);
+    color: white;
+    border: none;
+    padding: 0.75rem 2.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-volver:hover {
+    background: #1a5c36;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.error-separador {
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--verde-rv), var(--naranja-rv));
+    border-radius: 2px;
+    margin: 1.25rem auto;
+}
+
+.error-bg {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e8f4ee 0%, #fdf3e8 100%);
+}
+
+.aviso-cancelacion {
+    background-color: #fff5f5;
 }

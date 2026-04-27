@@ -13,7 +13,7 @@ $base = Parameters::$BASE_URL;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
-<?php require_once 'views/partials/header.php'; ?>
+<?php require_once 'views/layout/header.php'; ?>
 
 <main class="py-5 bg-light min-vh-100 d-flex align-items-center">
     <div class="container text-center py-5">
@@ -42,7 +42,7 @@ $base = Parameters::$BASE_URL;
                class="btn btn-naranja-rv rounded-pill px-5 py-3 fw-bold">
                 <i class="bi bi-house-fill me-2"></i>Volver al inicio
             </a>
-            <a href="<?= $base ?>index.php?controller=Actividad&action=showExperiencias"
+            <a href="<?= $base ?>Actividad/showExperiencias"
                class="btn btn-outline-verde-rv rounded-pill px-5 py-3 fw-bold">
                 <i class="bi bi-compass me-2"></i>Ver más experiencias
             </a>
@@ -51,7 +51,7 @@ $base = Parameters::$BASE_URL;
     </div>
 </main>
 
-<?php require_once 'views/partials/footer.php'; ?>
+<?php require_once 'views/layout/footer.php'; ?>
 <script src="<?= $base ?>assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

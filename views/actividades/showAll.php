@@ -99,7 +99,7 @@ function labelFiltro(string $tipo): string {
 </head>
 <body>
 
-<?php require_once 'views/partials/header.php'; ?>
+<?php require_once 'views/layout/header.php'; ?>
 
 <main class="py-5 bg-light">
     <div class="container">
@@ -299,12 +299,6 @@ function labelFiltro(string $tipo): string {
                                     <p><strong>Organiza:</strong> <?= htmlspecialchars($act->organizador) ?></p>
                                 </div>
                             </div>
-                            <div class="modal-footer border-0 justify-content-center pb-4">
-                                <a href="<?= $base ?>index.php?controller=Inscripcion&action=showFormulario&id=<?= $act->id ?>"
-                                   class="btn btn-naranja-rv rounded-pill px-5">
-                                    Reservar ahora
-                                </a>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -321,7 +315,7 @@ function labelFiltro(string $tipo): string {
 
         <!-- Botón inscripción -->
         <div class="text-center mt-5 pt-4">
-            <a href="<?= $base ?>index.php?controller=Inscripcion&action=showFormulario"
+            <a href="<?= $base ?>Inscripcion/showFormulario"
                class="btn btn-verde-rv btn-lg rounded-pill px-5 py-3">
                 <i class="bi bi-check-circle-fill me-2"></i>Confirmar Selección e Inscribirse
             </a>
@@ -330,7 +324,7 @@ function labelFiltro(string $tipo): string {
     </div>
 </main>
 
-<?php require_once 'views/partials/footer.php'; ?>
+<?php require_once 'views/layout/footer.php'; ?>
 
 <script src="<?= $base ?>assets/js/bootstrap.bundle.min.js"></script>
 <script src="<?= $base ?>assets/javascript.js"></script>

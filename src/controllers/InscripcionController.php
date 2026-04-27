@@ -1,6 +1,7 @@
 <?php
 namespace RaicesVivas\Controllers;
 
+use RaicesVivas\Config\Parameters;
 use RaicesVivas\Models\ActividadModel;
 use RaicesVivas\Models\LocalidadModel;
 use RaicesVivas\Models\PersonaModel;
@@ -140,14 +141,14 @@ class InscripcionController {
         $_SESSION['inscripcion_codigo'] = $codigo;
         unset($_SESSION['carrito']);
 
-        header('Location: index.php?controller=Inscripcion&action=showExito');
+        header('Location: ' . Parameters::$BASE_URL . 'Inscripcion/showExito');
         exit();
     }
 
     /*Pantalla de éxito tras inscribirse.*/
     public function showExito(): void {
         if (empty($_SESSION['inscripcion_ok'])) {
-            header('Location: index.php');
+            header('Location: ' . Parameters::$BASE_URL);
             exit();
         }
 
@@ -163,11 +164,10 @@ class InscripcionController {
 
     /*busca una persona por su código RV y devuelve JSON con sus datos y las actividades de su carrito (persona_sesion).*/
     public function buscarCodigo(): void {
-        header('Content-Type: application/json; charset=utf-8');
-
         $codigo = strtoupper(trim($_GET['codigo'] ?? ''));
 
         if (empty($codigo)) {
+            header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['error' => 'Código no proporcionado.']);
             exit();
         }
@@ -175,11 +175,19 @@ class InscripcionController {
         $personaModel = new PersonaModel();
         $resultado    = $personaModel->getByCodigoConActividades($codigo);
 
+        header('Content-Type: application/json; charset=utf-8');
+
         if (!$resultado) {
             echo json_encode([
                 'error'          => 'No se encontró ninguna inscripción con el código ',
                 'codigo_buscado' => htmlspecialchars($codigo)
             ]);
+            exit();
+        }
+
+        // Si el código pertenece a un ADMIN, redirigir al panel de administración
+        if (($resultado['rol'] ?? '') === 'ADMIN') {
+            echo json_encode(['redirect' => 'Admin/showLogin']);
             exit();
         }
 

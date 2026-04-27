@@ -19,7 +19,7 @@ $base = Parameters::$BASE_URL;
 </head>
 <body>
 
-<?php require_once 'views/partials/header.php'; ?>
+<?php require_once 'views/layout/header.php'; ?>
 
 <main>
     <section id="historia" class="py-5 overflow-hidden">
@@ -190,7 +190,7 @@ $base = Parameters::$BASE_URL;
     </section>
 </main>
 
-<?php require_once 'views/partials/footer.php'; ?>
+<?php require_once 'views/layout/footer.php'; ?>
 
 <script src="<?= $base ?>assets/js/bootstrap.bundle.min.js"></script>
 <script src="<?= $base ?>assets/javascript.js"></script>

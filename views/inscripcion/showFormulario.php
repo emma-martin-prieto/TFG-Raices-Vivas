@@ -20,7 +20,7 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
 </head>
 <body>
 
-<?php require_once 'views/partials/header.php'; ?>
+<?php require_once 'views/layout/header.php'; ?>
 
 <main class="py-5 bg-light min-vh-100">
     <div class="container">
@@ -45,7 +45,7 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
 
             <!-- ── COLUMNA IZQUIERDA: resumen carrito ── -->
             <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 90px;">
+                <div class="card border-0 shadow-sm rounded-4 sticky-top sidebar-sticky">
                     <div class="card-header bg-verde-rv text-white rounded-top-4 py-3 px-4">
                         <h5 class="mb-0 fw-bold">
                             <i class="bi bi-bag-check-fill me-2"></i>Tu selección
@@ -58,7 +58,7 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                             <div class="text-center text-muted py-5 px-4">
                                 <i class="bi bi-bag fs-1 d-block mb-3 opacity-25"></i>
                                 <p class="small">Aún no has añadido ninguna actividad.</p>
-                                <a href="<?= $base ?>index.php?controller=Actividad&action=showExperiencias"
+                                <a href="<?= $base ?>Actividad/showExperiencias"
                                    class="btn btn-outline-verde-rv btn-sm rounded-pill px-4">
                                     Ver experiencias
                                 </a>
@@ -71,7 +71,7 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                                         <p class="mb-0 fw-semibold small"><?= htmlspecialchars($act->nombre) ?></p>
                                         <span class="text-verde-rv fw-bold small"><?= number_format($act->precio, 2) ?> €</span>
                                     </div>
-                                    <a href="<?= $base ?>index.php?controller=Carrito&action=eliminar&id=<?= $act->id ?>"
+                                    <a href="<?= $base ?>Carrito/eliminar?id=<?= $act->id ?>"
                                        class="text-danger ms-2" title="Eliminar">
                                         <i class="bi bi-x-circle"></i>
                                     </a>
@@ -85,7 +85,7 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                             </div>
 
                             <div class="px-4 pb-3">
-                                <a href="<?= $base ?>index.php?controller=Carrito&action=vaciar"
+                                <a href="<?= $base ?>Carrito/vaciar"
                                    class="btn btn-outline-danger btn-sm w-100 rounded-pill">
                                     <i class="bi bi-trash me-1"></i>Vaciar selección
                                 </a>
@@ -102,7 +102,7 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                     <div class="card-body p-4 p-md-5">
 
                         <form id="form-inscripcion" method="POST"
-                              action="<?= $base ?>index.php?controller=Inscripcion&action=procesar"
+                              action="<?= $base ?>Inscripcion/procesar"
                               class="needs-validation" novalidate>
 
                             <!-- 1. Datos personales -->
@@ -218,9 +218,7 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                             </span>
                             <input type="text" id="buscar-codigo"
                                    class="form-control custom-input text-uppercase"
-                                   placeholder="Introduce tu código de inscripción"
-                                   maxlength="11"
-                                   style="letter-spacing: 3px; font-family: 'Courier New', monospace; font-weight: 700;">
+                                   placeholder="Introduce tu código de inscripción">
                             <button class="btn btn-naranja-rv px-4 fw-bold"
                                     id="btn-buscar-codigo" type="button">
                                 Buscar
@@ -228,8 +226,93 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                         </div>
 
                         <!-- Resultado -->
-                        <div id="resultado-codigo" class="d-none" data-base="<?= $base ?>">
-                        </div>
+                        <div id="resultado-codigo" class="d-none" data-base="<?= $base ?>"></div>
+
+                        <!-- Templates HTML — el JS los clona y rellena, no genera HTML propio -->
+
+                        <template id="tpl-resultado">
+                            <div class="border rounded-4 overflow-hidden">
+                                <div class="bg-verde-rv text-white px-4 py-3 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p class="mb-0 small opacity-75">Inscripción encontrada</p>
+                                        <h6 class="mb-0 fw-bold js-nombre-persona"></h6>
+                                    </div>
+                                    <span class="badge bg-naranja-rv fs-6 font-monospace js-codigo-persona"></span>
+                                </div>
+                                <div class="px-4 py-3 bg-white border-bottom">
+                                    <p class="mb-0 small text-muted">
+                                        <i class="bi bi-envelope me-1"></i><span class="js-email-persona"></span>
+                                        &nbsp;·&nbsp;
+                                        <i class="bi bi-calendar me-1"></i>Registrado el <span class="js-fecha-persona"></span>
+                                    </p>
+                                </div>
+                                <div class="bg-white">
+                                    <p class="px-4 pt-3 mb-1 small fw-bold text-verde-rv text-uppercase">
+                                        <i class="bi bi-bag-check me-1"></i>Actividades reservadas
+                                    </p>
+                                    <ul class="list-group list-group-flush js-lista-actividades"></ul>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template id="tpl-actividad-normal">
+                            <li class="list-group-item py-2 px-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="fw-semibold small js-act-nombre"></span>
+                                        <span class="badge ms-2 js-act-badge"></span>
+                                    </div>
+                                    <span class="fw-bold text-verde-rv small js-act-precio"></span>
+                                </div>
+                            </li>
+                        </template>
+
+                        <template id="tpl-actividad-cancelada">
+                            <li class="list-group-item py-2 px-3 bg-danger-subtle">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="fw-semibold small text-decoration-line-through text-muted js-act-nombre"></span>
+                                        <span class="badge ms-2 bg-danger">Cancelada</span>
+                                    </div>
+                                    <span class="fw-bold small text-muted text-decoration-line-through js-act-precio"></span>
+                                </div>
+                                <div class="aviso-cancelacion mt-2 p-2 rounded-3 border border-danger-subtle d-flex gap-2 align-items-start">
+                                    <i class="bi bi-exclamation-triangle-fill text-danger mt-1 flex-shrink-0"></i>
+                                    <div>
+                                        <p class="mb-0 small fw-bold text-danger">Esta actividad ha sido cancelada</p>
+                                        <p class="mb-0 small text-muted mt-1 js-act-motivo"></p>
+                                        <p class="mb-0 small text-muted mt-1">Si tienes dudas sobre tu reserva, contacta con la organización.</p>
+                                    </div>
+                                </div>
+                            </li>
+                        </template>
+
+                        <template id="tpl-sin-actividades">
+                            <li class="list-group-item text-muted small py-2 px-3">Sin actividades registradas.</li>
+                        </template>
+
+                        <template id="tpl-alerta-warning">
+                            <div class="alert alert-warning rounded-3 mb-0 d-flex align-items-center gap-2">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span class="js-alerta-texto"></span>
+                            </div>
+                        </template>
+
+                        <template id="tpl-alerta-danger">
+                            <div class="alert alert-danger rounded-3 mb-0 d-flex align-items-center gap-2">
+                                <i class="bi bi-x-circle-fill"></i>
+                                <span class="js-alerta-texto"></span>
+                                <strong class="js-alerta-codigo d-none"></strong>
+                                <span class="js-alerta-punto d-none">.</span>
+                            </div>
+                        </template>
+
+                        <template id="tpl-spinner">
+                            <div class="py-2 d-flex align-items-center gap-2">
+                                <div class="spinner-border spinner-border-sm text-verde-rv"></div>
+                                <span class="text-muted small">Buscando...</span>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -238,7 +321,7 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
     </div>
 </main>
 
-<?php require_once 'views/partials/footer.php'; ?>
+<?php require_once 'views/layout/footer.php'; ?>
 
 <script src="<?= $base ?>assets/js/bootstrap.bundle.min.js"></script>
 <script src="<?= $base ?>assets/javascript.js"></script>

@@ -28,7 +28,7 @@ $base = Parameters::$BASE_URL;
 </head>
 <body>
 
-<?php require_once 'views/partials/header.php'; ?>
+<?php require_once 'views/layout/header.php'; ?>
 
 <main>
     <!-- HERO -->
@@ -40,7 +40,7 @@ $base = Parameters::$BASE_URL;
         <div class="container hero-content text-center text-white">
             <h1 class="display-3 fw-bold mb-3">Tu próxima vida empieza aquí</h1>
             <p class="lead mb-4 fst-italic">"Vive el pueblo, no solo lo visites"</p>
-            <a href="<?= $base ?>index.php?controller=Actividad&action=showExperiencias"
+            <a href="<?= $base ?>Actividad/showExperiencias"
                class="btn btn-naranja btn-lg rounded-pill px-5 py-3">
                 Quiero participar
             </a>
@@ -178,7 +178,7 @@ $base = Parameters::$BASE_URL;
     </section>
 </main>
 
-<?php require_once 'views/partials/footer.php'; ?>
+<?php require_once 'views/layout/footer.php'; ?>
 
 <script src="<?= $base ?>assets/js/bootstrap.bundle.min.js"></script>
 <script src="<?= $base ?>assets/javascript.js"></script>
