@@ -209,45 +209,53 @@ document.addEventListener('DOMContentLoaded', function () {
     function mostrarDatos(data) {
         limpiarResultado();
 
-        // Clonar template principal
         const node = clonar('tpl-resultado');
 
-        // Rellenar datos personales
-        node.querySelector('.js-nombre-persona').textContent = data.nombre + ' ' + data.priApe;
-        node.querySelector('.js-codigo-persona').textContent = data.codigo;
-        node.querySelector('.js-email-persona').textContent  = data.email;
-        node.querySelector('.js-fecha-persona').textContent  = data.fecha_registro;
+        const nombrePersona = node.querySelector('.js-nombre-persona');
+        const codigoPersona = node.querySelector('.js-codigo-persona');
+        const emailPersona  = node.querySelector('.js-email-persona');
+        const fechaPersona  = node.querySelector('.js-fecha-persona');
 
-        // Rellenar lista de actividades
+        if (nombrePersona) nombrePersona.textContent = data.nombre + ' ' + data.priApe;
+        if (codigoPersona) codigoPersona.textContent = data.codigo;
+        if (emailPersona)  emailPersona.textContent  = data.email;
+        if (fechaPersona)  fechaPersona.textContent  = data.fecha_registro;
+
         const lista = node.querySelector('.js-lista-actividades');
 
-        if (data.actividades && data.actividades.length > 0) {
+        if (lista && data.actividades && data.actividades.length > 0) {
             data.actividades.forEach(function (act) {
                 const cancelada = act.estado === 'cancelada';
-                const tplId     = cancelada ? 'tpl-actividad-cancelada' : 'tpl-actividad-normal';
-                const li        = clonar(tplId);
+                const tplId = cancelada ? 'tpl-actividad-cancelada' : 'tpl-actividad-normal';
+                const li = clonar(tplId);
 
-                li.querySelector('.js-act-nombre').textContent = act.nombre;
-                li.querySelector('.js-act-precio').textContent = parseFloat(act.precio).toFixed(2) + ' €';
+                const nombreEl = li.querySelector('.js-act-nombre');
+                if (nombreEl) nombreEl.textContent = act.nombre;
+
+                const precioEl = li.querySelector('.js-act-precio');
+                if (precioEl) precioEl.textContent = parseFloat(act.precio).toFixed(2) + ' €';
 
                 if (!cancelada) {
                     const badge = li.querySelector('.js-act-badge');
-                    badge.textContent = act.tipo;
-                    badge.classList.add(badgeClass(act.tipo));
+                    if (badge) {
+                        badge.textContent = act.tipo;
+                        badge.classList.add(...badgeClass(act.tipo).split(' '));
+                    }
                 } else {
                     const motivoEl = li.querySelector('.js-act-motivo');
-                    if (act.motivo_cancelacion && act.motivo_cancelacion.trim() !== '') {
-                        motivoEl.textContent = 'Motivo: ' + act.motivo_cancelacion;
-                    } else {
-                        motivoEl.remove();
+                    if (motivoEl) {
+                        if (act.motivo_cancelacion && act.motivo_cancelacion.trim() !== '') {
+                            motivoEl.textContent = 'Motivo: ' + act.motivo_cancelacion;
+                        } else {
+                            motivoEl.remove();
+                        }
                     }
                 }
 
                 lista.appendChild(li);
             });
-        } else {
-            const liVacio = clonar('tpl-sin-actividades');
-            lista.appendChild(liVacio);
+        } else if (lista) {
+            lista.appendChild(clonar('tpl-sin-actividades'));
         }
 
         resultado.appendChild(node);
@@ -257,7 +265,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function buscar() {
         const codigo = inputCodigo.value.trim().toUpperCase();
 
-        // Código especial de administrador — redirige directamente sin validar longitud
         if (codigo === 'RV-ADMIN') {
             mostrarSpinner();
             window.location.href = base + 'index.php?controller=Admin&action=verificarCodigo&codigo=RV-ADMIN';
@@ -271,9 +278,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         mostrarSpinner();
 
-        fetch(base + 'index.php?controller=Inscripcion&action=buscarCodigo&codigo=' + encodeURIComponent(codigo))
-            .then(function (res) { return res.json(); })
+        const url = base + 'index.php?controller=Inscripcion&action=buscarCodigo&codigo=' + encodeURIComponent(codigo);
+
+        fetch(url)
+            .then(function (res) {
+                return res.json();
+            })
             .then(function (data) {
+
                 if (data.redirect) {
                     window.location.href = base + data.redirect;
                 } else if (data.error) {
