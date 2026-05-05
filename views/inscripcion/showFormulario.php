@@ -2,6 +2,7 @@
 use RaicesVivas\Config\Parameters;
 $base = Parameters::$BASE_URL;
 
+$localidades = $localidades ?? [];
 $totalCarrito = count($actividadesCarrito ?? []);
 $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ?? []));
 ?>
@@ -134,7 +135,7 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                                                value="<?= htmlspecialchars($dataPOST['apellido2'] ?? '') ?>">
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-5">
                                     <div class="input-group">
                                         <span class="input-group-text icon-input"><i class="bi bi-envelope-at"></i></span>
                                         <input type="email" name="email" id="email" class="form-control custom-input"
@@ -142,10 +143,10 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                                                value="<?= htmlspecialchars($dataPOST['email'] ?? '') ?>">
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="input-group">
                                         <span class="input-group-text icon-input"><i class="bi bi-calendar-event"></i></span>
-                                        <input type="date" name="fecha_nac" id="fecha_nac" class="form-control custom-input" required
+                                        <input type="date" name="fecha_nac" id="fecha_nac" class="form-control custom-input" required max="<?= date('Y-m-d') ?>"
                                                value="<?= htmlspecialchars($dataPOST['fecha_nac'] ?? '') ?>">
                                     </div>
                                 </div>

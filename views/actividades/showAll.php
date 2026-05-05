@@ -1,6 +1,6 @@
 <?php
 // Helpers
-
+$actividades = $actividades ?? [];
 function badgeTipo(string $tipo): string {
     return match($tipo) {
         'taller'      => '<span class="badge bg-naranja-rv position-absolute top-0 start-0 m-3">Taller</span>',
@@ -334,7 +334,7 @@ function labelFiltro(string $tipo): string {
     <div id="toastCarrito" class="toast align-items-center text-white border-0 shadow" role="alert">
         <div class="d-flex">
             <div class="toast-body fw-semibold" id="toastMensaje">
-                ¡Añadido a tu selección!
+                Actividad añadida a tu selección. Pulsa “Inscríbete” para formalizar la reserva.
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
         </div>
