@@ -320,7 +320,6 @@ function labelFiltro(string $tipo): string {
                 <i class="bi bi-check-circle-fill me-2"></i>Confirmar Selección e Inscribirse
             </a>
         </div>
-
     </div>
 </main>
 

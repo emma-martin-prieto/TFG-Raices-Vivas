@@ -357,7 +357,11 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(function (data) {
                 toastEl.classList.remove('bg-danger', 'bg-success');
                 toastEl.classList.add(data.ok ? 'bg-success' : 'bg-danger');
-                toastMsg.textContent = data.mensaje;
+                if (data.ok) {
+                    toastMsg.textContent = 'Actividad añadida a tu selección. Pulsa “Inscríbete” para formalizar la reserva.';
+                } else {
+                    toastMsg.textContent = data.mensaje;
+                }
                 toast.show();
                 if (data.ok && data.plazas_libres !== null && data.plazas_libres !== undefined) {
                     actualizarSpanPlazas(data.id_actividad, data.plazas_libres, data.cupo_max);
