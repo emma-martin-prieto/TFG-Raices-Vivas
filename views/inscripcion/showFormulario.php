@@ -3,8 +3,9 @@ use RaicesVivas\Config\Parameters;
 $base = Parameters::$BASE_URL;
 
 $localidades = $localidades ?? [];
-$totalCarrito = count($actividadesCarrito ?? []);
-$precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ?? []));
+$sesionesCarrito = $sesionesCarrito ?? [];
+$totalCarrito = count($sesionesCarrito);
+$precioTotal = array_sum(array_map(fn($s) => $s->precio, $sesionesCarrito));
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -55,7 +56,7 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                     </div>
                     <div class="card-body p-0">
 
-                        <?php if (empty($actividadesCarrito)): ?>
+                        <?php if (empty($sesionesCarrito)): ?>
                             <div class="text-center text-muted py-5 px-4">
                                 <i class="bi bi-bag fs-1 d-block mb-3 opacity-25"></i>
                                 <p class="small">Aún no has añadido ninguna actividad.</p>
@@ -66,13 +67,19 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                             </div>
                         <?php else: ?>
                             <ul class="list-group list-group-flush">
-                                <?php foreach ($actividadesCarrito as $act): ?>
+                                <?php foreach ($sesionesCarrito as $ses): ?>
                                 <li class="list-group-item d-flex justify-content-between align-items-start py-3 px-4">
                                     <div>
-                                        <p class="mb-0 fw-semibold small"><?= htmlspecialchars($act->nombre) ?></p>
-                                        <span class="text-verde-rv fw-bold small"><?= number_format($act->precio, 2) ?> €</span>
+                                        <p class="mb-0 fw-semibold small"><?= htmlspecialchars($ses->nombre) ?></p>
+                                        <?php if ($ses->fecha_hora_inicio): ?>
+                                        <p class="mb-0 text-verde-rv small">
+                                            <i class="bi bi-calendar2-check me-1"></i>
+                                            <?= date('d/m/Y · H:i', strtotime($ses->fecha_hora_inicio)) ?>
+                                        </p>
+                                        <?php endif; ?>
+                                        <span class="text-verde-rv fw-bold small"><?= number_format($ses->precio, 2) ?> €</span>
                                     </div>
-                                    <a href="<?= $base ?>Carrito/eliminar?id=<?= $act->id ?>"
+                                    <a href="<?= $base ?>Carrito/eliminar?id=<?= $ses->id_sesion ?>"
                                        class="text-danger ms-2" title="Eliminar">
                                         <i class="bi bi-x-circle"></i>
                                     </a>
@@ -181,12 +188,12 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
                             </div>
 
                             <!-- Botón enviar -->
-                            <button type="submit" <?= empty($actividadesCarrito) ? 'disabled' : '' ?>
+                            <button type="submit" <?= empty($sesionesCarrito) ? 'disabled' : '' ?>
                                     class="btn btn-naranja-rv btn-lg w-100 rounded-pill fw-bold py-3">
                                 <i class="bi bi-check-circle-fill me-2"></i>¡CONFIRMAR MI EXPEDICIÓN!
                             </button>
 
-                            <?php if (empty($actividadesCarrito)): ?>
+                            <?php if (empty($sesionesCarrito)): ?>
                             <p class="text-center text-muted small mt-2">
                                 Añade al menos una actividad para poder inscribirte.
                             </p>
@@ -258,24 +265,40 @@ $precioTotal  = array_sum(array_map(fn($a) => $a->precio, $actividadesCarrito ??
 
                         <template id="tpl-actividad-normal">
                             <li class="list-group-item py-2 px-3">
-                                <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex justify-content-between align-items-start">
                                     <div>
                                         <span class="fw-semibold small js-act-nombre"></span>
                                         <span class="badge ms-2 js-act-badge"></span>
+                                        <div class="text-muted small mt-1 js-act-fecha-wrap">
+                                            <i class="bi bi-calendar2-check me-1 text-verde-rv"></i>
+                                            <span class="js-act-fecha"></span>
+                                            <span class="ms-2 js-act-duracion-wrap">
+                                                <i class="bi bi-clock me-1 text-verde-rv"></i>
+                                                <span class="js-act-duracion"></span>
+                                            </span>
+                                        </div>
                                     </div>
-                                    <span class="fw-bold text-verde-rv small js-act-precio"></span>
+                                    <span class="fw-bold text-verde-rv small js-act-precio ms-3 text-nowrap"></span>
                                 </div>
                             </li>
                         </template>
 
                         <template id="tpl-actividad-cancelada">
                             <li class="list-group-item py-2 px-3 bg-danger-subtle">
-                                <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex justify-content-between align-items-start">
                                     <div>
                                         <span class="fw-semibold small text-decoration-line-through text-muted js-act-nombre"></span>
                                         <span class="badge ms-2 bg-danger">Cancelada</span>
+                                        <div class="text-muted small mt-1 js-act-fecha-wrap">
+                                            <i class="bi bi-calendar2-check me-1"></i>
+                                            <span class="js-act-fecha"></span>
+                                            <span class="ms-2 js-act-duracion-wrap">
+                                                <i class="bi bi-clock me-1"></i>
+                                                <span class="js-act-duracion"></span>
+                                            </span>
+                                        </div>
                                     </div>
-                                    <span class="fw-bold small text-muted text-decoration-line-through js-act-precio"></span>
+                                    <span class="fw-bold small text-muted text-decoration-line-through js-act-precio ms-3 text-nowrap"></span>
                                 </div>
                                 <div class="aviso-cancelacion mt-2 p-2 rounded-3 border border-danger-subtle d-flex gap-2 align-items-start">
                                     <i class="bi bi-exclamation-triangle-fill text-danger mt-1 flex-shrink-0"></i>

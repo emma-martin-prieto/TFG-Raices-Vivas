@@ -183,6 +183,60 @@ class AdminController {
         exit();
     }
 
+    public function crearOrganizador(): void {
+        $this->requireAdmin();
+        $nombre = trim($_POST['nombre'] ?? '');
+        $tipo   = $_POST['tipo'] ?? '';
+        $tipos  = ['empresa', 'asociacion', 'ayuntamiento', 'autonomo'];
+
+        if (strlen($nombre) < 3 || !in_array($tipo, $tipos)) {
+            $_SESSION['admin_error'] = 'Datos del organizador no válidos.';
+        } else {
+            $ok = (new OrganizadorModel())->create($nombre, $tipo);
+            $_SESSION[$ok ? 'admin_msg' : 'admin_error'] = $ok
+                ? 'Organizador creado correctamente.'
+                : 'Error al crear el organizador.';
+        }
+        $this->redirectPanel();
+    }
+
+    public function editarOrganizador(): void {
+        $this->requireAdmin();
+        $id     = (int)($_POST['id'] ?? 0);
+        $nombre = trim($_POST['nombre'] ?? '');
+        $tipo   = $_POST['tipo'] ?? '';
+        $tipos  = ['empresa', 'asociacion', 'ayuntamiento', 'autonomo'];
+
+        if ($id <= 0 || strlen($nombre) < 3 || !in_array($tipo, $tipos)) {
+            $_SESSION['admin_error'] = 'Datos del organizador no válidos.';
+        } else {
+            $ok = (new OrganizadorModel())->update($id, $nombre, $tipo);
+            $_SESSION[$ok ? 'admin_msg' : 'admin_error'] = $ok
+                ? 'Organizador actualizado correctamente.'
+                : 'Error al actualizar el organizador.';
+        }
+        $this->redirectPanel();
+    }
+
+    public function eliminarOrganizador(): void {
+        $this->requireAdmin();
+        $id = (int)($_POST['id'] ?? 0);
+
+        if ($id <= 0) {
+            $_SESSION['admin_error'] = 'ID no válido.';
+        } else {
+            $resultado = (new OrganizadorModel())->delete($id);
+            if ($resultado === 'tiene_actividades') {
+                $_SESSION['admin_error'] = 'No se puede eliminar: el organizador tiene actividades asociadas.';
+            } else {
+                $_SESSION[$resultado ? 'admin_msg' : 'admin_error'] = $resultado
+                    ? 'Organizador eliminado correctamente.'
+                    : 'Error al eliminar el organizador.';
+            }
+        }
+        $this->redirectPanel();
+    }
+
     // ── Helpers privados
 
     private function requireAdmin(): void {

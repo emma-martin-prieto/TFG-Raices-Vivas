@@ -127,7 +127,8 @@ class PersonaModel extends Model {
             // 2. Buscar sus actividades via persona_sesion
             $sql2 = "SELECT a.id, a.nombre, a.precio, a.tipo,
                             a.estado, a.motivo_cancelacion,
-                            s.fecha_hora_inicio
+                            s.fecha_hora_inicio, s.fecha_hora_fin,
+                            TIMESTAMPDIFF(MINUTE, s.fecha_hora_inicio, s.fecha_hora_fin) AS duracion_minutos
                      FROM persona_sesion ps
                      JOIN sesion    s ON ps.id_sesion    = s.id
                      JOIN actividad a ON s.id_actividad  = a.id
@@ -158,6 +159,8 @@ class PersonaModel extends Model {
                     'estado'              => $a->estado,
                     'motivo_cancelacion'  => $a->motivo_cancelacion,
                     'fecha_hora_inicio'   => $a->fecha_hora_inicio,
+                    'fecha_hora_fin'      => $a->fecha_hora_fin,
+                    'duracion_minutos'    => (int)$a->duracion_minutos,
                 ], $actividades)
             ];
 

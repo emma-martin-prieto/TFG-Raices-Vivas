@@ -8,43 +8,33 @@ class ActividadModel extends Model {
         $this->tabla = "actividad";
     }
 
-    /*Todas las actividades activas con su tipo y organizador.*/
+    /*Una fila por cada sesión activa. El front muestra una tarjeta por sesión.*/
     public function getAllConTipo(): array|null {
         try {
-            $consulta = "SELECT a.id, a.tipo, a.nombre, a.descripcion_general,
+            $consulta = "SELECT a.id        AS id_actividad,
+                                s.id        AS id_sesion,
+                                a.tipo, a.nombre, a.descripcion_general,
                                 a.precio, a.duracion,
-                                o.nombre AS organizador,
+                                o.nombre    AS organizador,
                                 t.nivel, t.materiales_incluidos,
                                 r.dificultad, r.distancia_km, r.recomendaciones,
                                 r.punto_inicio, r.punto_fin,
                                 ch.tema,
                                 al.tipo_alojamiento, al.noches, al.regimen, al.condiciones,
-                                prox.fecha_hora_inicio, prox.fecha_hora_fin, prox.cupo_max,
-                                (prox.cupo_max - COALESCE(prox.inscritos, 0)) AS plazas_libres
+                                s.fecha_hora_inicio, s.fecha_hora_fin, s.cupo_max,
+                                (s.cupo_max - COUNT(ps.id_persona)) AS plazas_libres
                          FROM actividad a
                          JOIN organizador      o  ON a.id_organizador = o.id
+                         JOIN sesion           s  ON s.id_actividad = a.id
                          LEFT JOIN taller      t  ON a.id = t.id_actividad
                          LEFT JOIN ruta        r  ON a.id = r.id_actividad
                          LEFT JOIN charla      ch ON a.id = ch.id_actividad
                          LEFT JOIN alojamiento al ON a.id = al.id_actividad
-                         LEFT JOIN (
-                             SELECT s.id_actividad,
-                                    s.fecha_hora_inicio, s.fecha_hora_fin, s.cupo_max,
-                                    COUNT(ps.id_persona) AS inscritos
-                             FROM sesion s
-                             LEFT JOIN persona_sesion ps ON s.id = ps.id_sesion
-                             WHERE s.id_edicion = 3
-                               AND s.id = (
-                                   SELECT id FROM sesion s2
-                                   WHERE s2.id_actividad = s.id_actividad
-                                     AND s2.id_edicion = 3
-                                   ORDER BY s2.fecha_hora_inicio ASC
-                                   LIMIT 1
-                               )
-                             GROUP BY s.id
-                         ) prox ON a.id = prox.id_actividad
+                         LEFT JOIN persona_sesion ps ON ps.id_sesion = s.id
                          WHERE a.estado = 'activa'
-                         ORDER BY a.tipo, a.nombre";
+                           AND s.id_edicion = 3
+                         GROUP BY s.id
+                         ORDER BY a.tipo, a.nombre, s.fecha_hora_inicio";
 
             $sentencia = $this->conn->prepare($consulta);
             $sentencia->setFetchMode(\PDO::FETCH_OBJ);
@@ -158,6 +148,33 @@ class ActividadModel extends Model {
         } catch (\PDOException $e) {
             error_log("ActividadModel. countByTipo ($tipo): " . $e->getMessage());
             return -1;
+        }
+    }
+
+    /* Devuelve los datos completos de una sesión concreta (con nombre de actividad y precio).
+       Usado en: carrito y formulario de inscripción.*/
+    public function getSesionById(int $idSesion): mixed {
+        try {
+            $sql = "SELECT s.id        AS id_sesion,
+                           s.id_actividad,
+                           a.nombre, a.precio, a.tipo,
+                           s.fecha_hora_inicio, s.fecha_hora_fin, s.cupo_max,
+                           (s.cupo_max - COUNT(ps.id_persona)) AS plazas_libres
+                    FROM sesion s
+                    JOIN actividad a ON s.id_actividad = a.id
+                    LEFT JOIN persona_sesion ps ON ps.id_sesion = s.id
+                    WHERE s.id = :idSesion
+                    GROUP BY s.id";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':idSesion', $idSesion, \PDO::PARAM_INT);
+            $stmt->setFetchMode(\PDO::FETCH_OBJ);
+            $stmt->execute();
+            return $stmt->fetch();
+
+        } catch (\PDOException $e) {
+            error_log("ActividadModel. getSesionById: " . $e->getMessage());
+            return null;
         }
     }
 

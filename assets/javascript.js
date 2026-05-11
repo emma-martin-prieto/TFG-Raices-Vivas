@@ -235,6 +235,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 const precioEl = li.querySelector('.js-act-precio');
                 if (precioEl) precioEl.textContent = parseFloat(act.precio).toFixed(2) + ' €';
 
+                // Fecha/hora de inicio
+                const fechaEl = li.querySelector('.js-act-fecha');
+                if (fechaEl && act.fecha_hora_inicio) {
+                    const d = new Date(act.fecha_hora_inicio.replace(' ', 'T'));
+                    const dia  = String(d.getDate()).padStart(2, '0');
+                    const mes  = String(d.getMonth() + 1).padStart(2, '0');
+                    const anyo = d.getFullYear();
+                    const hh   = String(d.getHours()).padStart(2, '0');
+                    const mm   = String(d.getMinutes()).padStart(2, '0');
+                    fechaEl.textContent = dia + '/' + mes + '/' + anyo + ' · ' + hh + ':' + mm + 'h';
+                } else {
+                    const wrap = li.querySelector('.js-act-fecha-wrap');
+                    if (wrap) wrap.remove();
+                }
+
+                // Duración calculada desde inicio/fin
+                const duracionEl = li.querySelector('.js-act-duracion');
+                if (duracionEl && act.duracion_minutos > 0) {
+                    const h = Math.floor(act.duracion_minutos / 60);
+                    const m = act.duracion_minutos % 60;
+                    duracionEl.textContent = h > 0
+                        ? (h + 'h' + (m > 0 ? ' ' + m + 'min' : ''))
+                        : (m + ' min');
+                } else {
+                    const dWrap = li.querySelector('.js-act-duracion-wrap');
+                    if (dWrap) dWrap.remove();
+                }
+
                 if (!cancelada) {
                     const badge = li.querySelector('.js-act-badge');
                     if (badge) {
@@ -419,3 +447,87 @@ document.addEventListener('DOMContentLoaded', function () {
     var seleccionado = document.querySelector('input[name="tipo"]:checked');
     if (seleccionado) mostrarPanel(seleccionado.value);
 });
+
+// ── Formulario de actividad (admin)
+(function () {
+    var formActividad = document.getElementById('form-actividad');
+    if (!formActividad) return;
+
+    // Mostrar/ocultar motivo cancelación
+    var selectEstado = document.getElementById('estado');
+    if (selectEstado) {
+        selectEstado.addEventListener('change', function () {
+            document.getElementById('bloque-motivo').style.display =
+                this.value === 'cancelada' ? '' : 'none';
+        });
+    }
+
+    // Añadir sesión
+    document.getElementById('btn-add-sesion').addEventListener('click', function () {
+        var tpl   = document.getElementById('tpl-sesion');
+        var clone = tpl.content.cloneNode(true);
+        document.getElementById('lista-sesiones').appendChild(clone);
+    });
+
+    // Eliminar sesión (delegado)
+    document.getElementById('lista-sesiones').addEventListener('click', function (e) {
+        var btn = e.target.closest('.btn-eliminar-sesion');
+        if (!btn) return;
+        btn.closest('.sesion-row').remove();
+    });
+
+    // Validar sesiones al guardar
+    formActividad.addEventListener('submit', function (e) {
+        var durExacta = parseInt(document.getElementById('duracion').value, 10);
+        var mensajes  = [];
+
+        document.querySelectorAll('#lista-sesiones .sesion-row').forEach(function (row, idx) {
+            var inicio = row.querySelector('input[name="ses_inicio[]"]').value;
+            var fin    = row.querySelector('input[name="ses_fin[]"]').value;
+            if (!inicio || !fin) return;
+
+            var tsInicio   = new Date(inicio);
+            var tsFin      = new Date(fin);
+            var minsSesion = Math.round((tsFin - tsInicio) / 60000);
+            var num        = idx + 1;
+
+            if (tsFin <= tsInicio) {
+                mensajes.push('Sesión ' + num + ': la hora de fin debe ser posterior a la de inicio.');
+            } else if (minsSesion !== durExacta) {
+                mensajes.push('Sesión ' + num + ': dura ' + minsSesion + ' min pero debe durar exactamente ' + durExacta + ' min.');
+            }
+        });
+
+        if (mensajes.length === 0) return;
+
+        e.preventDefault();
+
+        var bloque = document.getElementById('errores-js');
+        if (!bloque) {
+            bloque = document.createElement('div');
+            bloque.id        = 'errores-js';
+            bloque.className = 'alert alert-danger rounded-3 mb-4';
+
+            var titulo = document.createElement('p');
+            titulo.className = 'fw-bold mb-1';
+            titulo.textContent = 'Revisa los siguientes campos:';
+            bloque.appendChild(titulo);
+
+            var lista = document.createElement('ul');
+            lista.className = 'mb-0 ps-3 small';
+            bloque.appendChild(lista);
+
+            formActividad.prepend(bloque);
+        }
+
+        var lista = bloque.querySelector('ul');
+        lista.textContent = '';
+        mensajes.forEach(function (msg) {
+            var li = document.createElement('li');
+            li.textContent = msg;
+            lista.appendChild(li);
+        });
+
+        bloque.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+}());

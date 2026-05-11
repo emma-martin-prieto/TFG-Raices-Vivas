@@ -6,12 +6,12 @@ use RaicesVivas\Models\ActividadModel;
 
 class CarritoController {
 
-    /*Añade una actividad al carrito (guardado en sesión). Devuelve JSON para que el JS muestre el toast.*/
+    /*Añade una sesión al carrito (guardado en sesión PHP). Devuelve JSON para que el JS muestre el toast.*/
     public function aniadir(): void {
-        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        $idSesion = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-        if ($id <= 0) {
-            echo json_encode(['ok' => false, 'mensaje' => 'Actividad no válida']);
+        if ($idSesion <= 0) {
+            echo json_encode(['ok' => false, 'mensaje' => 'Sesión no válida']);
             exit();
         }
 
@@ -20,30 +20,26 @@ class CarritoController {
             $_SESSION['carrito'] = [];
         }
 
-        // Comprobar si ya está añadida
-        if (in_array($id, $_SESSION['carrito'])) {
-            echo json_encode(['ok' => false, 'mensaje' => '¡Ya tienes esta actividad en tu selección!']);
+        // Comprobar si esta sesión ya está añadida
+        if (in_array($idSesion, $_SESSION['carrito'])) {
+            echo json_encode(['ok' => false, 'mensaje' => '¡Ya tienes esta sesión en tu selección!']);
             exit();
         }
 
-        // Añadir al carrito
-        $_SESSION['carrito'][] = $id;
+        // Añadir la sesión al carrito
+        $_SESSION['carrito'][] = $idSesion;
 
-        // Obtener plazas actualizadas de la sesión recién añadida
+        // Obtener plazas actualizadas de esa sesión concreta
         $actividadModel = new ActividadModel();
-        $sesiones = $actividadModel->getSesionesByActividad($id);
-        $plazasLibres = null;
-        $cupoMax = null;
-        if ($sesiones && count($sesiones) > 0) {
-            $plazasLibres = max(0, (int)$sesiones[0]->plazas_libres);
-            $cupoMax = (int)$sesiones[0]->cupo_max;
-        }
+        $sesion = $actividadModel->getSesionById($idSesion);
+        $plazasLibres = $sesion ? max(0, (int)$sesion->plazas_libres) : null;
+        $cupoMax      = $sesion ? (int)$sesion->cupo_max : null;
 
         echo json_encode([
             'ok'            => true,
             'mensaje'       => '¡Añadido a tu selección!',
             'total'         => count($_SESSION['carrito']),
-            'id_actividad'  => $id,
+            'id_sesion'     => $idSesion,
             'plazas_libres' => $plazasLibres,
             'cupo_max'      => $cupoMax
         ]);

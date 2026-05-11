@@ -144,8 +144,21 @@ function labelFiltro(string $tipo): string {
                         <!-- Cuerpo -->
                         <div class="card-body p-4">
                             <h5 class="card-title fw-bold"><?= htmlspecialchars($act->nombre) ?></h5>
+
+                            <!-- Fecha de la sesión -->
+                            <?php if ($act->fecha_hora_inicio): ?>
+                            <p class="mb-2 small text-verde-rv fw-semibold">
+                                <i class="bi bi-calendar-event me-1"></i>
+                                <?= date('d/m/Y', strtotime($act->fecha_hora_inicio)) ?>
+                                &nbsp;·&nbsp;
+                                <i class="bi bi-clock me-1"></i>
+                                <?= date('H:i', strtotime($act->fecha_hora_inicio)) ?>
+                                – <?= date('H:i', strtotime($act->fecha_hora_fin)) ?>
+                            </p>
+                            <?php endif; ?>
+
                             <p class="card-text text-muted small">
-                                <?= htmlspecialchars(mb_substr($act->descripcion_general, 0, 120)) ?>...
+                                <?= htmlspecialchars(mb_substr($act->descripcion_general, 0, 100)) ?>...
                             </p>
 
                             <!-- Icono + precio + duración + cupo -->
@@ -156,9 +169,14 @@ function labelFiltro(string $tipo): string {
                                 <span class="small fw-bold">
                                     <?= number_format($act->precio, 2) ?> €
                                 </span>
-                                <span class="small text-muted">
-                                    <?= $act->duracion ?> min
-                                </span>
+                                <?php if ($act->fecha_hora_inicio && $act->fecha_hora_fin):
+                                    $mins = (strtotime($act->fecha_hora_fin) - strtotime($act->fecha_hora_inicio)) / 60;
+                                    $h    = floor($mins / 60);
+                                    $m    = $mins % 60;
+                                    $durTexto = $h > 0 ? $h . 'h' . ($m > 0 ? ' ' . $m . 'min' : '') : $m . ' min';
+                                ?>
+                                <span class="small text-muted"><?= $durTexto ?></span>
+                                <?php endif; ?>
                                 <?php if ($act->cupo_max): ?>
                                 <?php
                                     $libres  = max(0, (int)($act->plazas_libres ?? $act->cupo_max));
@@ -168,7 +186,7 @@ function labelFiltro(string $tipo): string {
                                     elseif ($ratio <= 0.5)  { $cls = 'text-warning fw-semibold'; $txt = "Quedan $libres plaza" . ($libres === 1 ? '' : 's'); }
                                     else                    { $cls = 'text-muted'; $txt = "Quedan $libres plaza" . ($libres === 1 ? '' : 's'); }
                                 ?>
-                                <span class="small <?= $cls ?>" id="plazas-<?= $act->id ?>">
+                                <span class="small <?= $cls ?>" id="plazas-<?= $act->id_sesion ?>">
                                     <i class="bi bi-people-fill me-1"></i><?= $txt ?>
                                 </span>
                                 <?php endif; ?>
@@ -178,21 +196,27 @@ function labelFiltro(string $tipo): string {
                             <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
                                 <button class="btn btn-outline-verde-rv btn-sm px-3"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#modal-<?= $act->id ?>">
+                                        data-bs-target="#modal-<?= $act->id_sesion ?>">
                                     Detalles
                                 </button>
+                                <?php if ((int)($act->plazas_libres ?? 1) > 0): ?>
                                 <button class="btn btn-naranja-rv btn-sm px-3 btn-reservar"
-                                        data-id="<?= $act->id ?>"
+                                        data-id="<?= $act->id_sesion ?>"
                                         data-base="<?= $base ?>">
                                     <i class="bi bi-bag-plus me-1"></i>Reservar
                                 </button>
+                                <?php else: ?>
+                                <button class="btn btn-secondary btn-sm px-3" disabled>
+                                    Sin plazas
+                                </button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Modal de detalle -->
-                <div class="modal fade" id="modal-<?= $act->id ?>" tabindex="-1" aria-hidden="true">
+                <div class="modal fade" id="modal-<?= $act->id_sesion ?>" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-centered">
                         <div class="modal-content border-0 rounded-4 shadow">
                             <div class="modal-header border-0 pb-0">
@@ -206,11 +230,11 @@ function labelFiltro(string $tipo): string {
                                          style="max-height:320px; width:100%; object-fit:cover;"
                                          alt="<?= htmlspecialchars($act->nombre) ?>">
                                 <?php else: ?>
-                                    <div id="carousel-<?= $act->id ?>" class="carousel slide rounded-4 mb-3 shadow-sm overflow-hidden" data-bs-ride="false" style="max-height:320px;">
+                                    <div id="carousel-<?= $act->id_sesion ?>" class="carousel slide rounded-4 mb-3 shadow-sm overflow-hidden" data-bs-ride="false" style="max-height:320px;">
                                         <div class="carousel-indicators">
                                             <?php foreach ($fotos as $i => $foto): ?>
                                             <button type="button"
-                                                    data-bs-target="#carousel-<?= $act->id ?>"
+                                                    data-bs-target="#carousel-<?= $act->id_sesion ?>"
                                                     data-bs-slide-to="<?= $i ?>"
                                                     class="<?= $i === 0 ? 'active' : '' ?>"
                                                     aria-label="Foto <?= $i + 1 ?>"></button>
@@ -226,10 +250,10 @@ function labelFiltro(string $tipo): string {
                                             </div>
                                             <?php endforeach; ?>
                                         </div>
-                                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-<?= $act->id ?>" data-bs-slide="prev">
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-<?= $act->id_sesion ?>" data-bs-slide="prev">
                                             <span class="carousel-control-prev-icon"></span>
                                         </button>
-                                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-<?= $act->id ?>" data-bs-slide="next">
+                                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-<?= $act->id_sesion ?>" data-bs-slide="next">
                                             <span class="carousel-control-next-icon"></span>
                                         </button>
                                     </div>
@@ -285,7 +309,7 @@ function labelFiltro(string $tipo): string {
                                     ?>
                                     <p>
                                         <strong><i class="bi bi-people-fill me-1"></i>Plazas disponibles:</strong>
-                                        <span class="<?= $clsM ?>" id="plazas-modal-<?= $act->id ?>"><?= $txtM ?></span>
+                                        <span class="<?= $clsM ?>" id="plazas-modal-<?= $act->id_sesion ?>"><?= $txtM ?></span>
                                     </p>
                                     <?php endif; ?>
 
@@ -294,7 +318,8 @@ function labelFiltro(string $tipo): string {
                                         <strong>Precio:</strong>
                                         <span class="text-verde-rv fw-bold"><?= number_format($act->precio, 2) ?> €</span>
                                         &nbsp;·&nbsp;
-                                        <strong>Duración:</strong> <?= $act->duracion ?> min
+                                        <strong>Duración aprox:</strong>
+                                        <?php echo (int)$act->duracion . ' min'; ?>
                                     </p>
                                     <p><strong>Organiza:</strong> <?= htmlspecialchars($act->organizador) ?></p>
                                 </div>

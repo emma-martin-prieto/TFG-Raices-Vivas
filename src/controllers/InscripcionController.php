@@ -9,23 +9,23 @@ use RaicesVivas\Entities\PersonaEntity;
 
 class InscripcionController {
 
-    /*Muestra el formulario con el resumen del carrito y las localidades.*/
+    /*Muestra el formulario con el resumen del carrito (sesiones) y las localidades.*/
     public function showFormulario(): void {
-        $carrito            = $_SESSION['carrito'] ?? [];
-        $actividadModel     = new ActividadModel();
-        $localidadModel     = new LocalidadModel();
-        $actividadesCarrito = [];
+        $carrito        = $_SESSION['carrito'] ?? [];
+        $actividadModel = new ActividadModel();
+        $localidadModel = new LocalidadModel();
+        $sesionesCarrito = [];
 
-        foreach ($carrito as $idAct) {
-            $act = $actividadModel->getDetalleById($idAct);
-            if ($act) $actividadesCarrito[] = $act;
+        foreach ($carrito as $idSesion) {
+            $sesion = $actividadModel->getSesionById((int)$idSesion);
+            if ($sesion) $sesionesCarrito[] = $sesion;
         }
 
         ViewController::show('views/inscripcion/showFormulario.php', [
-            'actividadesCarrito' => $actividadesCarrito,
-            'localidades'        => $localidadModel->getAll(),
-            'errores'            => [],
-            'dataPOST'           => []
+            'sesionesCarrito' => $sesionesCarrito,
+            'localidades'     => $localidadModel->getAll(),
+            'errores'         => [],
+            'dataPOST'        => []
         ]);
     }
 
@@ -43,7 +43,7 @@ class InscripcionController {
         $fechaNac    = trim($_POST['fecha_nac']    ?? '');
         $idLocalidad = (int)($_POST['id_localidad'] ?? 0);
         $notas       = trim($_POST['notas']        ?? '');
-        $carrito     = $_SESSION['carrito']        ?? [];
+        $carrito     = $_SESSION['carrito']        ?? [];   // array de id_sesion
 
         // Validaciones
         $errores = [];
@@ -68,22 +68,22 @@ class InscripcionController {
                 $errores[] = 'Ya existe una inscripción con ese correo electrónico.';
         }
 
-        // ── Si hay errores volver al formulario 
+        // ── Si hay errores volver al formulario
         if (!empty($errores)) {
-            $actividadModel     = new ActividadModel();
-            $localidadModel     = new LocalidadModel();
-            $actividadesCarrito = [];
+            $actividadModel  = new ActividadModel();
+            $localidadModel  = new LocalidadModel();
+            $sesionesCarrito = [];
 
-            foreach ($carrito as $idAct) {
-                $act = $actividadModel->getDetalleById($idAct);
-                if ($act) $actividadesCarrito[] = $act;
+            foreach ($carrito as $idSesion) {
+                $sesion = $actividadModel->getSesionById((int)$idSesion);
+                if ($sesion) $sesionesCarrito[] = $sesion;
             }
 
             ViewController::show('views/inscripcion/showFormulario.php', [
-                'actividadesCarrito' => $actividadesCarrito,
-                'localidades'        => $localidadModel->getAll(),
-                'errores'            => $errores,
-                'dataPOST'           => $_POST
+                'sesionesCarrito' => $sesionesCarrito,
+                'localidades'     => $localidadModel->getAll(),
+                'errores'         => $errores,
+                'dataPOST'        => $_POST
             ]);
             return;
         }
@@ -113,10 +113,10 @@ class InscripcionController {
 
         if (!$ok) {
             ViewController::show('views/inscripcion/showFormulario.php', [
-                'actividadesCarrito' => [],
-                'localidades'        => (new LocalidadModel())->getAll(),
-                'errores'            => ['Ha ocurrido un error al guardar tu inscripción. Inténtalo de nuevo.'],
-                'dataPOST'           => $_POST
+                'sesionesCarrito' => [],
+                'localidades'     => (new LocalidadModel())->getAll(),
+                'errores'         => ['Ha ocurrido un error al guardar tu inscripción. Inténtalo de nuevo.'],
+                'dataPOST'        => $_POST
             ]);
             return;
         }
@@ -124,14 +124,10 @@ class InscripcionController {
         // Obtener el id de la persona recién creada
         $idPersona = $personaModel->getIdByCodigo($codigo);
 
-        // Inscribir la persona en la primera sesión de cada actividad del carrito
+        // Inscribir directamente en cada sesión elegida (ya no buscamos la primera sesión)
         if ($idPersona) {
-            $actividadModel = new ActividadModel();
-            foreach ($carrito as $idActividad) {
-                $idSesion = $actividadModel->getPrimeraSesionId((int)$idActividad);
-                if ($idSesion) {
-                    $personaModel->inscribirEnSesion($idPersona, $idSesion);
-                }
+            foreach ($carrito as $idSesion) {
+                $personaModel->inscribirEnSesion($idPersona, (int)$idSesion);
             }
         }
 
